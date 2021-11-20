@@ -1,0 +1,95 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{polski}
+\usepackage{enumitem}
+\usepackage{amssymb}
+\usepackage{lipsum} 
+\usepackage{titling}
+\author{Marcin Miśkiewicz, Adrian Sobczak}
+\title{\textbf{Tytuł sprawka}}
+\date{\today}
+\begin{document}
+
+<<SETUP, include=FALSE>>=
+# ------------------------------------------- SETUP
+knitr::opts_chunk$set(echo = FALSE, message=FALSE, warning=FALSE, dev="cairo_pdf")
+pdf.options(encoding='CP1250')
+@
+
+<< LIBRARIES + global ggplot config, echo=F>>=
+# ------------------------------------------- LIBRARIES + global ggplot config
+library(ggplot2)
+
+theme_set(theme_bw(base_size = 35))
+theme_update(plot.title = element_text(hjust = 0.5),
+             plot.subtitle = element_text(hjust = 0.5))
+
+#                  RED       YELLOW    DARKBLUE     PINK     LIGHTBLUE
+MY_PALETTE1 = c("#ff0000", "#ffa200", "#241aa5", "#ff00fb", "#007bff")
+@
+
+<<DATA IMPORT + CLEANING, echo=F>>=
+# ------------------------------------------ DATA IMPORT + CLEANING
+
+df <- read.csv("../data/nba_dataset.csv")
+
+keep <- c("DISPLAY_FIRST_LAST",
+          "COUNTRY",
+          "HEIGHT",
+          "WEIGHT",
+          "SEASON_EXP",
+          "POSITION",
+          "TEAM_NAME",
+          "PTS",
+          "AST",
+          "REB")
+
+df <- df[keep]  # save only needed variables
+
+new_names <- c("zawodnik",
+               "kraj",
+               "wzrost",
+               "waga",
+               "sezony",
+               "pozycja",
+               "drużyna",
+               "punkty",
+               "asysty",
+               "zbiórki")
+
+
+for (i in 1:length(keep)) {
+  names(df)[names(df) == keep[i]]  <- new_names[i]  # rename variables
+}
+
+# simplify positions
+df$pozycja[df$pozycja == 'Center-Forward'] <- 'Center'
+df$pozycja[df$pozycja == 'Forward-Center'] <- 'Forward'
+df$pozycja[df$pozycja == 'Forward-Guard']  <- 'Forward'
+df$pozycja[df$pozycja == 'Guard-Forward']  <- 'Guard'
+
+df$waga   <- df$waga * 0.45             # LBS to kg
+df$wzrost <- df$wzrost * 2.5 / 100      # Inch to m
+
+df <- df[!(df$pozycja == ""), ]  # temporary solution for missing values
+@
+
+\maketitle
+\section{Wprowadzenie}
+
+<<echo=F, fig.width=19, fig.height=11, fig.align="center", fig.cap="podpis rysunku">>=
+ggplot(df, aes(asysty, zbiórki, shape=pozycja, color=pozycja)) +
+    geom_point(size=4, stroke=1.4, alpha=0.4) +
+    geom_smooth(method = "lm", show.legend = FALSE) +
+    scale_color_manual(values=MY_PALETTE1[1:3]) +
+    scale_shape_manual(values=c(17, 15, 16)) +
+    guides(color = guide_legend(override.aes = list(size = 10))) +
+    labs(x = "asysty", 
+         y = "zbiórki", 
+         title = "Zbiórki vs. asysty",
+         subtitle = sprintf("Wykres rozrzutu z naniesionymi liniami trendu"))
+@
+
+\lipsum[1-5]
+\end{document}
