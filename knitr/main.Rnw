@@ -43,45 +43,40 @@ keep <- c("DISPLAY_FIRST_LAST",
           "TEAM_NAME",
           "PTS",
           "AST",
-          "REB")
+          "REB",
+          "DRAFT_YEAR",
+          "TEAM_CITY")
 
 df <- df[keep]  # save only needed variables
 
-new_names <- c("zawodnik",
-               "kraj",
-               "wzrost",
-               "waga",
-               "sezony",
-               "pozycja",
-               "drużyna",
-               "punkty",
-               "asysty",
-               "zbiórki")
+names(df)[names(df) == "DISPLAY_FIRST_LAST"] <- "PLAYER"
+names(df)[names(df) == "TEAM_NAME"] <- "TEAM"
 
+# df["AMERICAN"] <- df$COUNTRY == "USA"
 
-for (i in 1:length(keep)) {
-  names(df)[names(df) == keep[i]]  <- new_names[i]  # rename variables
-}
 
 # simplify positions
-df$pozycja[df$pozycja == 'Center-Forward'] <- 'Center'
-df$pozycja[df$pozycja == 'Forward-Center'] <- 'Forward'
-df$pozycja[df$pozycja == 'Forward-Guard']  <- 'Forward'
-df$pozycja[df$pozycja == 'Guard-Forward']  <- 'Guard'
+df$POSITION[df$POSITION == 'Center-Forward'] <- 'Center'
+df$POSITION[df$POSITION == 'Forward-Center'] <- 'Forward'
+df$POSITION[df$POSITION == 'Forward-Guard']  <- 'Forward'
+df$POSITION[df$POSITION == 'Guard-Forward']  <- 'Guard'
 
-df$waga   <- df$waga * 0.45             # LBS to kg
-df$wzrost <- df$wzrost * 2.5 / 100      # Inch to m
+df$WEIGHT <- df$WEIGHT * 0.45       # LBS to kg
+df$HEIGHT <- df$HEIGHT * 2.5 / 100  # Inch to m
 
-df <- df[!(df$pozycja == ""), ]  # temporary solution for missing values
 @
 
 \maketitle
 \section{Wprowadzenie}
 
 <<echo=F, fig.width=19, fig.height=11, fig.align="center", fig.cap="podpis rysunku">>=
-ggplot(df, aes(asysty, zbiórki, shape=pozycja, color=pozycja)) +
-    geom_point(size=4, stroke=1.4, alpha=0.4) +
-    geom_smooth(method = "lm", show.legend = FALSE) +
+
+# nrow(df[(df$POSITION == ""), ])   # only 60 guys haven't specified position, so we will ignore them
+df2 <- df[!(df$POSITION == ""), ]
+
+ggplot(df2, aes(AST, REB, shape=POSITION, color=POSITION, na.rm=TRUE)) +
+    geom_point(size=4, stroke=1.4, alpha=0.4, na.rm=TRUE) +
+    geom_smooth(method = "lm", show.legend = FALSE, na.rm=TRUE) +
     scale_color_manual(values=MY_PALETTE1[1:3]) +
     scale_shape_manual(values=c(17, 15, 16)) +
     guides(color = guide_legend(override.aes = list(size = 10))) +
@@ -91,5 +86,17 @@ ggplot(df, aes(asysty, zbiórki, shape=pozycja, color=pozycja)) +
          subtitle = sprintf("Wykres rozrzutu z naniesionymi liniami trendu"))
 @
 
+<<echo=F, fig.width=19, fig.height=11, fig.align="center", fig.cap="podpis rysunku">>=
+ggplot(df2, aes(x=HEIGHT, y=AST, na.rm=TRUE, color=POSITION, shape=POSITION)) +
+    geom_jitter(size=4, stroke=1.4, alpha=0.4, na.rm=TRUE, width=0.01) +
+    scale_color_manual(values=MY_PALETTE1[1:3]) +
+    scale_shape_manual(values=c(17, 15, 16)) +
+    guides(color = guide_legend(override.aes = list(size = 10))) +
+    labs(x = "wzrost", 
+         y = "asysty", 
+         title = "Asysty vs. wzrost",
+         subtitle = sprintf("Wykres rozrzutu z naniesionymi liniami trendu")) +
+    theme(text = element_text(size=35))
+@ 
 \lipsum[1-5]
 \end{document}
