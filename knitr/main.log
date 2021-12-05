@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020/W32TeX) (preloaded format=pdflatex 2020.9.30)  1 DEC 2021 16:02
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020/W32TeX) (preloaded format=pdflatex 2020.9.30)  5 DEC 2021 18:35
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -198,6 +198,12 @@ File: figure/unnamed-chunk-2-1.pdf Graphic file (type pdf)
 <use figure/unnamed-chunk-2-1.pdf>
 Package pdftex.def Info: figure/unnamed-chunk-2-1.pdf  used on input line 89.
 (pdftex.def)             Requested size: 390.0pt x 225.78033pt.
+Package color Info: Redefining color shadecolor on input line 99.
+<figure/unnamed-chunk-3-1.pdf, id=3, 1373.13pt x 794.97pt>
+File: figure/unnamed-chunk-3-1.pdf Graphic file (type pdf)
+<use figure/unnamed-chunk-3-1.pdf>
+Package pdftex.def Info: figure/unnamed-chunk-3-1.pdf  used on input line 101.
+(pdftex.def)             Requested size: 390.0pt x 225.78033pt.
  [1
 
 {c:/texlive/2020/texmf-var/fonts/map/pdftex/updmap/pdftex.map}] [2 <./figure/un
@@ -205,24 +211,25 @@ named-chunk-1-1.pdf> <./figure/unnamed-chunk-2-1.pdf
 
 pdfTeX warning: pdflatex.exe (file ./figure/unnamed-chunk-2-1.pdf): PDF inclusi
 on: multiple pdfs with page group included in a single page
->] [3] (./main.aux) ) 
+>] [3 <./figure/unnamed-chunk-3-1.pdf>] (./main.aux) ) 
 Here is how much of TeX's memory you used:
- 3114 strings out of 480875
- 50596 string characters out of 5911456
- 550028 words of memory out of 5000000
- 18709 multiletter control sequences out of 15000+600000
+ 3122 strings out of 480875
+ 50845 string characters out of 5911456
+ 551280 words of memory out of 5000000
+ 18716 multiletter control sequences out of 15000+600000
  542612 words of font info for 47 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  36i,6n,38p,261b,256s stack positions out of 5000i,500n,10000p,200000b,80000s
-{c:/texlive/2020/texmf-dist/fonts/enc/dvips/cm-super/cm-su
-per-t1.enc}<c:/texlive/2020/texmf-dist/fonts/type1/public/cm-super/sfbx1728.pfb
-><c:/texlive/2020/texmf-dist/fonts/type1/public/cm-super/sfbx2074.pfb><c:/texli
-ve/2020/texmf-dist/fonts/type1/public/cm-super/sfrm1200.pfb><c:/texlive/2020/te
-xmf-dist/fonts/type1/public/cm-super/sfrm1440.pfb>
-Output written on main.pdf (3 pages, 273051 bytes).
+{c:/texlive/2020/texmf-di
+st/fonts/enc/dvips/cm-super/cm-super-t1.enc}<c:/texlive/2020/texmf-dist/fonts/t
+ype1/public/cm-super/sfbx1728.pfb><c:/texlive/2020/texmf-dist/fonts/type1/publi
+c/cm-super/sfbx2074.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/cm-super
+/sfrm1200.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/cm-super/sfrm1440.
+pfb>
+Output written on main.pdf (3 pages, 308544 bytes).
 PDF statistics:
- 48 PDF objects out of 1000 (max. 8388607)
- 32 compressed objects within 1 object stream
+ 64 PDF objects out of 1000 (max. 8388607)
+ 43 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
- 11 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 16 words of extra memory for PDF output out of 10000 (max. 10000000)
 

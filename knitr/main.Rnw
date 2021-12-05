@@ -98,5 +98,19 @@ ggplot(df2, aes(x=HEIGHT, y=AST, na.rm=TRUE, color=POSITION, shape=POSITION)) +
          subtitle = sprintf("Wykres rozrzutu z naniesionymi liniami trendu")) +
     theme(text = element_text(size=35))
 @ 
+
+<<echo=F, fig.width=19, fig.height=11, fig.align="center", fig.cap="TODO: label na średnią">>=
+
+ggplot(data=df, aes(x=SEASON_EXP, y=PTS, group=SEASON_EXP, fill=SEASON_EXP)) +
+  geom_boxplot(color="#703100", alpha=0.5, lwd=1.5) +
+  stat_summary(fun = mean, geom='point', shape=18, color="#ff7300", size=6) +
+  scale_fill_gradient(low = "#fcba03", high = "#fc3003", aesthetics = "fill") + 
+  guides(fill="none") +
+  labs(x = "liczba pełnych sezonów lidze (doświadczenie zawodnika)", 
+       y = "średnia liczba punktów na mecz", 
+       title = "Liczba punktów vs. doświadczenie w lidze") +
+  theme(text = element_text(size=35))
+@
+
 \lipsum[1-5]
 \end{document}
