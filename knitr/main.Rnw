@@ -18,6 +18,14 @@
 # ------------------------------------------- SETUP
 knitr::opts_chunk$set(echo = FALSE, message=FALSE, warning=FALSE, dev="cairo_pdf")
 pdf.options(encoding='CP1250')
+
+## custom inline output (in order to print rounded numbers)
+inline_hook <- function(x) {
+    if(is.numeric(x)) x <- round(x, 2)
+    paste(as.character(x), collapse=", ")
+}
+knit_hooks$set(inline = inline_hook)
+
 @
 
 << LIBRARIES + global ggplot config, echo=F>>=
@@ -67,7 +75,9 @@ df$POSITION[df$POSITION == 'Guard-Forward']  <- 'Guard'
 df$WEIGHT <- df$WEIGHT * 0.45       # LBS to kg
 df$HEIGHT <- df$HEIGHT * 2.5 / 100  # Inch to m
 
+df2 <- df[complete.cases(df), ]
 @
+
 
 \maketitle
 
@@ -83,73 +93,115 @@ Mimo że wewnętrzne statystyki klubów NBA są ściśle chronione, istnieją r�
 
 Do analizy wykorzystamy tabelę ,,Player\_Attributes'' z bazy danych ,,Basketball dataset (version 211)'' udostępnionej przez Wyatta Walsha na platformie Kaggle \hyperref[sec:sources]{[1]} (na licencji CC BY-SA 4.0 \hyperref[sec:sources]{[2]}). W tabeli znajdziemy aż 37 zmiennych określonych dla 4500 zawodników (zarówno aktywnych, jak i tych na sportowej emeryturze). Na potrzeby tej analizy wykorzystamy jedynie 9 interesujących nas cech: imię i nazwisko zawodnika, wzrost, narodowość, nazwę klubu, średnią liczbę punktów/asyst/zbiórek na mecz, nominalną pozycję oraz liczbę pełnych sezonów rozegranych w lidze.
 
-Część danych zawiera braki --- nie każdy zawodnik ma przypisany wzrost, czy wszystkie statystyki meczowe. Nie znamy również dokładnej metody kojarzenia zawodnika z danym klubem. Autor bazy danych nie podał informacji na jakiej zasadzie graczom przypisywany jest zespół, ale wiemy, że nie jest to ostatni klub w którym emerytowany już zawodnik kończył karierę (gdyby tak było Michael Jordan byłby skojarzony z Washington Wizards, a jest z Chicago Bulls). Na potrzeby tej analizy zakładamy, że graczom przypisywany jest klub w którym zaliczyli najwięcej występów meczowych, jednak nie dysponujemy danymi by móc jednoznacznie potwierdzić zasadność tej interpretacji.
+\subsection{Przygotowanie zmiennych ilościowych}
+Część danych zawiera braki --- nie każdy zawodnik ma przypisany wzrost, czy wszystkie statystyki meczowe. W tabeli [\ref{tab:stat1}] umieściliśmy krótkie podsumowanie dla zmiennych ilościowych. Widzimy, że braków danych jest stosunkowo niewiele jak na 4500 rekordów. Dla zbiórek\footnote{Na przestrzeni całej pracy będziemy posługiwać się wygodnym skrótem myślowym --- pisząć ,,zbiórki'', ,,asysty'' lub ,,punkty'' zawodnika, mamy oczywiście na myśli ich średnią liczbę w przeliczeniu na jeden mecz.} mamy znacząco więcej braków niż dla pozostałych statystyk meczowych. Być może wpływ ma na to fakt, że zbiórki w meczach zostały oficjalnie zliczane dopiero od 1950 roku, w piątym sezonie ligi NBA. 
 
-W tabeli \ref{tab:stat1} umieściliśmy krótkie podsumowanie dla zmiennych numerycznych. Widzimy, że braków danych jest stosunkowo niewiele jak na 4500 rekordów. Dla zbiórek\footnote{Na przestrzeni całej pracy będziemy posługiwać się wygodnym skrótem myślowym --- pisząć ,,zbiórki'', ,,asysty'' lub ,,punkty'' zawodnika, mamy oczywiście na myśli ich średnią liczbę w przeliczeniu na jeden mecz.} mamy znacząco więcej braków niż dla pozostałych statystyk meczowych. Być może wpływ ma na to fakt, że zbiórki w meczach zostały oficjalnie zliczane dopiero od 1950 roku, w piątym sezonie ligi NBA.
+Warto zaznaczyć, że wzrost domyślnie zapisany był w calach, jednak mając na uwadze czytelność pracy, konwertujemy wszystkie wartości na metry (korzystamy z przelicznika: 1 cal = 2,54 cm).
 
-\begin{table}[]
+
+<<echo=F>>=
+minHEIGHT <- min(df$HEIGHT, na.rm = TRUE)
+maxHEIGHT <- max(df$HEIGHT, na.rm = TRUE)
+avgHEIGHT <- mean(df$HEIGHT, na.rm = TRUE)
+medHEIGHT <- median(df$HEIGHT, na.rm = TRUE)
+nasHEIGHT <- sum(is.na(df$HEIGHT))
+
+minPTS <- min(df$PTS, na.rm = TRUE)
+maxPTS <- max(df$PTS, na.rm = TRUE)
+avgPTS <- mean(df$PTS, na.rm = TRUE)
+medPTS <- median(df$PTS, na.rm = TRUE)
+nasPTS <- sum(is.na(df$PTS))
+
+minAST <- min(df$AST, na.rm = TRUE)
+maxAST <- max(df$AST, na.rm = TRUE)
+avgAST <- mean(df$AST, na.rm = TRUE)
+medAST <- median(df$AST, na.rm = TRUE)
+nasAST <- sum(is.na(df$AST))
+
+minREB <- min(df$REB, na.rm = TRUE)
+maxREB <- max(df$REB, na.rm = TRUE)
+avgREB <- mean(df$REB, na.rm = TRUE)
+medREB <- median(df$REB, na.rm = TRUE)
+nasREB <- sum(is.na(df$REB))
+
+minSEASONS <- min(df$SEASON_EXP, na.rm = TRUE)
+maxSEASONS <- max(df$SEASON_EXP, na.rm = TRUE)
+avgSEASONS <- mean(df$SEASON_EXP, na.rm = TRUE)
+medSEASONS <- median(df$SEASON_EXP, na.rm = TRUE)
+nasSEASONS <- sum(is.na(df$SEASON_EXP))
+@
+
+\begin{table}
 \centering
 \begin{tabular}{lccccc}
 \hline
-\textbf{}      & \textbf{min.} & \textbf{max.} & \textbf{średnia} & \textbf{mediana} & \textbf{braków} \\ \hline
-wzrost         & 1.625         & 2.275         & 1.952            & 1.95             & 97              \\
-punkty         & 0             & 31.8          & 6.36             & 5.1              & 15              \\
-asysty         & 0             & 11.2          & 1.44             & 1                & 15              \\
-zbiórki        & 0             & 22.9          & 2.98             & 2.4              & 307             \\
-liczba sezonów & 0             & 22            & 4.3              & 3                & 0               \\ \hline
+\textbf{}      & \textbf{min.}      & \textbf{max.}      & \textbf{średnia}   & \textbf{mediana}   & \textbf{braków}    \\ \hline
+wzrost [m]     & \Sexpr{minHEIGHT}  & \Sexpr{maxHEIGHT}  & \Sexpr{avgHEIGHT}  & \Sexpr{medHEIGHT}  & \Sexpr{nasHEIGHT}  \\
+punkty         & \Sexpr{minPTS}     & \Sexpr{maxPTS}     & \Sexpr{avgPTS}     & \Sexpr{medPTS}     & \Sexpr{nasPTS}     \\
+asysty         & \Sexpr{minAST}     & \Sexpr{maxAST}     & \Sexpr{avgAST}     & \Sexpr{medAST}     & \Sexpr{nasAST}     \\
+zbiórki        & \Sexpr{minREB}     & \Sexpr{maxREB}     & \Sexpr{avgREB}     & \Sexpr{medREB}     & \Sexpr{nasREB}     \\
+liczba sezonów & \Sexpr{minSEASONS} & \Sexpr{maxSEASONS} & \Sexpr{avgSEASONS} & \Sexpr{medSEASONS} & \Sexpr{nasSEASONS} \\ \hline
 \end{tabular}
-\caption{Podsumowanie zmiennych numerycznych.}
+\caption{Podsumowanie zmiennych ilościowych.}
 \label{tab:stat1}
 \end{table}
 
+\subsection{Przygotowanie zmiennych kategorycznych}
+
+W rozpatrywanym zbiorze danych możemy wyróżnić aż \Sexpr{length(table(df$TEAM))} różnych drużyn. Spośród nich 30 funkcjonuje do dzisiaj. Bez przypisanego klubu figuruje \Sexpr{length(df$TEAM[df$TEAM == ""])} zawodników. Chcielibyśmy zaznaczyć, że nie znamy dokładnej metody kojarzenia zawodnika z danym klubem. Autor bazy danych nie podał informacji na jakiej zasadzie graczom przypisywany jest zespół, ale wiemy, że nie jest to ostatni klub w którym emerytowany już zawodnik kończył karierę (gdyby tak było Michael Jordan byłby skojarzony z Washington Wizards, a jest z Chicago Bulls). Na potrzeby tej analizy zakładamy, że graczom przypisywany jest klub w którym zaliczyli najwięcej występów meczowych, jednak nie dysponujemy danymi by móc jednoznacznie potwierdzić zasadność tej interpretacji.
+
+W analizowanych danych możemy wyróżnić 3 podstawowe pozycje koszykarskie: \emph{Guard} (rozgrywający i rzucający obrońcy), \emph{Forward} (skrzydłowi) oraz \emph{Center} (podkoszowi). Dodatkowo niektórym zawodnikom przypisana jest kombinacja dwóch z wymienionych pozycji np. \emph{Center-Forward}, co w tym przypadku oznacza podkoszowego, który może grać również na skrzydle. Dla uproszczenia analiz przyjmiemy, że w przypadku takich graczy, jako nominalną pozycję na parkiecie, będziemy brać pierwszą z wymienionych. Zatem wszystkich \emph{Center-Forward} klasyfikujemy jako \emph{Center}, a wszystkich \emph{Forward-Center} jako \emph{Forward}. Zawodników bez przypisanej jakiejkolwiek pozycji mamy w zbiorze danych zaledwie \Sexpr{length(df$POSITION[df$POSITION == ""])}.
+
+Dodajmy jeszcze, że każdy zawodnik ma przypisaną narodowość oraz nie ma zawodników bez wpisanego imienia i nazwiska.
+
 <<echo=F, fig.width=19, fig.height=11, fig.align="center", fig.cap="podpis rysunku">>=
-
-# nrow(df[(df$POSITION == ""), ])   # only 60 guys haven't specified position, so we will ignore them
-df2 <- df[!(df$POSITION == ""), ]
-
-ggplot(df2, aes(AST, REB, shape=POSITION, color=POSITION, na.rm=TRUE)) +
-    geom_point(size=4, stroke=1.4, alpha=0.4, na.rm=TRUE) +
-    geom_smooth(method = "lm", show.legend = FALSE, na.rm=TRUE) +
-    scale_color_manual(values=MY_PALETTE1[1:3]) +
-    scale_shape_manual(values=c(1, 2, 5)) +
-    guides(color = guide_legend(override.aes = list(size = 10))) +
-    labs(x = "asysty / mecz", 
-         y = "zbiórki / mecz", 
-         title = "Zbiórki vs. asysty",
-         subtitle = sprintf("Wykres rozrzutu z naniesionymi liniami trendu"))
+# 
+# # nrow(df[(df$POSITION == ""), ])   # only 60 guys haven't specified position, so we will ignore them
+# df2 <- df[!(df$POSITION == ""), ]
+# 
+# ggplot(df2, aes(AST, REB, shape=POSITION, color=POSITION, na.rm=TRUE)) +
+#     geom_point(size=4, stroke=1.4, alpha=0.4, na.rm=TRUE) +
+#     geom_smooth(method = "lm", show.legend = FALSE, na.rm=TRUE) +
+#     scale_color_manual(values=MY_PALETTE1[1:3]) +
+#     scale_shape_manual(values=c(1, 2, 5)) +
+#     guides(color = guide_legend(override.aes = list(size = 10))) +
+#     labs(x = "asysty / mecz", 
+#          y = "zbiórki / mecz", 
+#          title = "Zbiórki vs. asysty",
+#          subtitle = sprintf("Wykres rozrzutu z naniesionymi liniami trendu"))
 @
-
+ 
 <<echo=F, fig.width=19, fig.height=11, fig.align="center", fig.cap="podpis rysunku">>=
-ggplot(df2, aes(x=HEIGHT, y=AST, na.rm=TRUE, color=POSITION, shape=POSITION)) +
-    geom_jitter(size=4, stroke=1.4, alpha=0.4, na.rm=TRUE, width=0.01) +
-    scale_color_manual(values=MY_PALETTE1[1:3]) +
-    scale_shape_manual(values=c(1, 2, 5)) +
-    guides(color = guide_legend(override.aes = list(size = 10))) +
-    labs(x = "wzrost", 
-         y = "asysty / mecz", 
-         title = "Asysty vs. wzrost",
-         subtitle = sprintf("Wykres rozrzutu z naniesionymi liniami trendu")) +
-    theme(text = element_text(size=35))
+# ggplot(df2, aes(x=HEIGHT, y=AST, na.rm=TRUE, color=POSITION, shape=POSITION)) +
+#     geom_jitter(size=4, stroke=1.4, alpha=0.4, na.rm=TRUE, width=0.01) +
+#     scale_color_manual(values=MY_PALETTE1[1:3]) +
+#     scale_shape_manual(values=c(1, 2, 5)) +
+#     guides(color = guide_legend(override.aes = list(size = 10))) +
+#     labs(x = "wzrost", 
+#          y = "asysty / mecz", 
+#          title = "Asysty vs. wzrost",
+#          subtitle = sprintf("Wykres rozrzutu z naniesionymi liniami trendu")) +
+#     theme(text = element_text(size=35))
 @ 
 
 <<echo=F, fig.width=19, fig.height=11, fig.align="center", fig.cap="Komentarz: tylko dwóch zawodników rozegrało dokładnie 20 pełnych sezonów w lidze (Jamal Crawford i Robert Parish) i tylko jeden zawodnik rozegrał dokładnie 22 pełne sezony (Vince Carter).">>=
-
-ggplot(data=df, aes(x=SEASON_EXP, y=PTS, group=SEASON_EXP, fill=SEASON_EXP)) +
-  geom_boxplot(color="#703100", alpha=0.5, lwd=1.5, na.rm = TRUE) +
-  stat_summary(fun = mean, geom='point', shape=18, color="#ff7300", size=6, na.rm = TRUE, show.legend = TRUE) +
-  scale_fill_gradient(low = "#fcba03", high = "#fc3003", aesthetics = "fill") + 
-  scale_shape_manual("", values=c("średnia"="x")) +
-  guides(fill="none") +
-  labs(x = "liczba pełnych sezonów lidze", 
-       y = "punkty / mecz", 
-       title = "Liczba punktów vs. doświadczenie w lidze") +
-  theme(text = element_text(size=35), 
-        legend.position = c(0.9, 0.15),
-        legend.title = element_blank(),
-        legend.spacing.y = unit(0, "mm"), 
-        panel.border = element_rect(colour = "black", fill=NA),
-        legend.background = element_blank(),
-        legend.box.background = element_rect(colour = "black"))
+# 
+# ggplot(data=df, aes(x=SEASON_EXP, y=PTS, group=SEASON_EXP, fill=SEASON_EXP)) +
+#   geom_boxplot(color="#703100", alpha=0.5, lwd=1.5, na.rm = TRUE) +
+#   stat_summary(fun = mean, geom='point', shape=18, color="#ff7300", size=6, na.rm = TRUE, show.legend = TRUE) +
+#   scale_fill_gradient(low = "#fcba03", high = "#fc3003", aesthetics = "fill") + 
+#   scale_shape_manual("", values=c("średnia"="x")) +
+#   guides(fill="none") +
+#   labs(x = "liczba pełnych sezonów lidze", 
+#        y = "punkty / mecz", 
+#        title = "Liczba punktów vs. doświadczenie w lidze") +
+#   theme(text = element_text(size=35), 
+#         legend.position = c(0.9, 0.15),
+#         legend.title = element_blank(),
+#         legend.spacing.y = unit(0, "mm"), 
+#         panel.border = element_rect(colour = "black", fill=NA),
+#         legend.background = element_blank(),
+#         legend.box.background = element_rect(colour = "black"))
 @
 
 	\section*{Źródła}\label{sec:sources} % bibtex nie działał nam dobrze z knitrem, dlatego bibliografię robimy na około
