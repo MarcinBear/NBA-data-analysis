@@ -57,7 +57,7 @@
 \usepackage{lipsum} 
 \usepackage{titling}
 \author{Marcin Miśkiewicz, Adrian Sobczak}
-\title{\textbf{Tytuł sprawka}}
+\title{\textbf{Analiza podstawowych statystyk meczowych zawodników ligi NBA}}
 \date{\today}
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
 \begin{document}
@@ -71,6 +71,13 @@
 \maketitle
 \section{Wprowadzenie}
 
+Odkąd profesjonalne organizacje sportowe zaczęły zatrudniać na pełen etat analityków i statystyków, charakter całych dyscyplin uległ pewnego rodzaju rewolucji. Specjaliści od danych z miejsca stali się bezpośrednimi doradcami kadry trenerskiej, a wyniki ich prac wprowadziły nowe trendy w sposobach treningu i samej gry. Dzisiaj system szkolenia oparty jedynie na solidnym przygotowaniu fizycznym ustępuje miejsca podejściu strategicznemu, mającemu w arsenale analizy wideo, pomiary wydolnościowe czy taktyki wyliczone pod konkretnych rywali. Jako kolebkę wdrażania zaawansowanej statystyki do sportu powszechnie uznaje się najsilniejszą ligę koszykarską na świecie --- NBA (\emph{National Basketball Association}). Dopiero amerykańscy pionierzy zainspirowali nowym sposobem myślenia działaczy z innych dyscyplin, takich jak piłka nożna czy siatkówka.
+
+\section{Cel pracy}
+
+Mimo że wewnętrzne statystyki klubów NBA są ściśle chronione, istnieją również powszechne bazy danych gromadzące szereg informacji na temat konkretnych zawodników. W niniejszej pracy wykorzystamy jeden z takich zbiorów i na jego podstawie wysuniemy garść wniosków m.in na temat panujących trendów w lidze, czy zależności pomiędzy poszczególnymi wynikami i parametrami fizycznymi graczy. Głównym celem analizy będzie uzyskanie charakterystyki najskuteczniejszych zawodników, czyli innymi słowy, odpowiedzenie na pytanie co łączy ze sobą najlepszych graczy. Przy okazji wyróżnimy zawodników o profilach unikalnych --- grających inaczej niż większość teoretycznie podobnych do nich koszykarzy.
+
+\section{Opis danych}
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{figure}
 
@@ -102,10 +109,9 @@
 
 }
 
-\caption[TODO]{TODO: label na średnią}\label{fig:unnamed-chunk-3}
+\caption[Komentarz]{Komentarz: tylko dwóch zawodników rozegrało dokładnie 20 pełnych sezonów w lidze (Jamal Crawford i Robert Parish) i tylko jeden zawodnik rozegrał dokładnie 22 pełne sezony (Vince Carter).}\label{fig:unnamed-chunk-3}
 \end{figure}
 
 \end{knitrout}
 
-\lipsum[1-5]
 \end{document}

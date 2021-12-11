@@ -21,3 +21,15 @@ df["from_USA"] <- df$COUNTRY == "USA"
   
   
 # geom_bar(stat='summary', fun.y = mean)
+
+
+ggplot(data=df, aes(x=SEASON_EXP, y=PTS, group=SEASON_EXP, fill=SEASON_EXP)) +
+  geom_boxplot(color="#703100", alpha=0.5, lwd=1.5, na.rm = TRUE) +
+  stat_summary(fun = mean, geom='point', shape=18, color="#ff7300", size=6, na.rm = TRUE, show.legend = TRUE) +
+  scale_fill_gradient(low = "#fcba03", high = "#fc3003", aesthetics = "fill") + 
+  scale_shape_manual("", values=c("średnia"="x")) +
+  guides(fill="none") +
+  labs(x = "liczba pełnych sezonów lidze (doświadczenie zawodnika)", 
+       y = "średnia liczba punktów na mecz", 
+       title = "Liczba punktów vs. doświadczenie w lidze")#+
+  # theme(text = element_text(size=35))

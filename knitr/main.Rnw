@@ -7,7 +7,7 @@
 \usepackage{lipsum} 
 \usepackage{titling}
 \author{Marcin Miśkiewicz, Adrian Sobczak}
-\title{\textbf{Tytuł sprawka}}
+\title{\textbf{Analiza podstawowych statystyk meczowych zawodników ligi NBA}}
 \date{\today}
 \begin{document}
 
@@ -25,8 +25,8 @@ theme_set(theme_bw(base_size = 35))
 theme_update(plot.title = element_text(hjust = 0.5),
              plot.subtitle = element_text(hjust = 0.5))
 
-#                  RED       YELLOW    DARKBLUE     PINK     LIGHTBLUE
-MY_PALETTE1 = c("#ff0000", "#ffa200", "#241aa5", "#ff00fb", "#007bff")
+#                  RED       YELLOW    LIGHTBLUE   PINK      DARKBLUE
+MY_PALETTE1 = c("#ff0000", "#ffa200", "#007bff", "#ff00fb", "#241aa5")
 @
 
 <<DATA IMPORT + CLEANING, echo=F>>=
@@ -69,6 +69,13 @@ df$HEIGHT <- df$HEIGHT * 2.5 / 100  # Inch to m
 \maketitle
 \section{Wprowadzenie}
 
+Odkąd profesjonalne organizacje sportowe zaczęły zatrudniać na pełen etat analityków i statystyków, charakter całych dyscyplin uległ pewnego rodzaju rewolucji. Specjaliści od danych z miejsca stali się bezpośrednimi doradcami kadry trenerskiej, a wyniki ich prac wprowadziły nowe trendy w sposobach treningu i samej gry. Dzisiaj system szkolenia oparty jedynie na solidnym przygotowaniu fizycznym ustępuje miejsca podejściu strategicznemu, mającemu w arsenale analizy wideo, pomiary wydolnościowe czy taktyki wyliczone pod konkretnych rywali. Jako kolebkę wdrażania zaawansowanej statystyki do sportu powszechnie uznaje się najsilniejszą ligę koszykarską na świecie --- NBA (\emph{National Basketball Association}). Dopiero amerykańscy pionierzy zainspirowali nowym sposobem myślenia działaczy z innych dyscyplin, takich jak piłka nożna czy siatkówka.
+
+\section{Cel pracy}
+
+Mimo że wewnętrzne statystyki klubów NBA są ściśle chronione, istnieją również powszechne bazy danych gromadzące szereg informacji na temat konkretnych zawodników. W niniejszej pracy wykorzystamy jeden z takich zbiorów i na jego podstawie wysuniemy garść wniosków m.in na temat panujących trendów w lidze, czy zależności pomiędzy poszczególnymi wynikami i parametrami fizycznymi graczy. Głównym celem analizy będzie uzyskanie charakterystyki najskuteczniejszych zawodników, czyli innymi słowy, odpowiedzenie na pytanie co łączy ze sobą najlepszych graczy. Przy okazji wyróżnimy zawodników o profilach unikalnych --- grających inaczej niż większość teoretycznie podobnych do nich koszykarzy.
+
+\section{Opis danych}
 <<echo=F, fig.width=19, fig.height=11, fig.align="center", fig.cap="podpis rysunku">>=
 
 # nrow(df[(df$POSITION == ""), ])   # only 60 guys haven't specified position, so we will ignore them
@@ -78,10 +85,10 @@ ggplot(df2, aes(AST, REB, shape=POSITION, color=POSITION, na.rm=TRUE)) +
     geom_point(size=4, stroke=1.4, alpha=0.4, na.rm=TRUE) +
     geom_smooth(method = "lm", show.legend = FALSE, na.rm=TRUE) +
     scale_color_manual(values=MY_PALETTE1[1:3]) +
-    scale_shape_manual(values=c(17, 15, 16)) +
+    scale_shape_manual(values=c(1, 2, 5)) +
     guides(color = guide_legend(override.aes = list(size = 10))) +
-    labs(x = "asysty", 
-         y = "zbiórki", 
+    labs(x = "asysty / mecz", 
+         y = "zbiórki / mecz", 
          title = "Zbiórki vs. asysty",
          subtitle = sprintf("Wykres rozrzutu z naniesionymi liniami trendu"))
 @
@@ -90,27 +97,33 @@ ggplot(df2, aes(AST, REB, shape=POSITION, color=POSITION, na.rm=TRUE)) +
 ggplot(df2, aes(x=HEIGHT, y=AST, na.rm=TRUE, color=POSITION, shape=POSITION)) +
     geom_jitter(size=4, stroke=1.4, alpha=0.4, na.rm=TRUE, width=0.01) +
     scale_color_manual(values=MY_PALETTE1[1:3]) +
-    scale_shape_manual(values=c(17, 15, 16)) +
+    scale_shape_manual(values=c(1, 2, 5)) +
     guides(color = guide_legend(override.aes = list(size = 10))) +
     labs(x = "wzrost", 
-         y = "asysty", 
+         y = "asysty / mecz", 
          title = "Asysty vs. wzrost",
          subtitle = sprintf("Wykres rozrzutu z naniesionymi liniami trendu")) +
     theme(text = element_text(size=35))
 @ 
 
-<<echo=F, fig.width=19, fig.height=11, fig.align="center", fig.cap="TODO: label na średnią">>=
+<<echo=F, fig.width=19, fig.height=11, fig.align="center", fig.cap="Komentarz: tylko dwóch zawodników rozegrało dokładnie 20 pełnych sezonów w lidze (Jamal Crawford i Robert Parish) i tylko jeden zawodnik rozegrał dokładnie 22 pełne sezony (Vince Carter).">>=
 
 ggplot(data=df, aes(x=SEASON_EXP, y=PTS, group=SEASON_EXP, fill=SEASON_EXP)) +
-  geom_boxplot(color="#703100", alpha=0.5, lwd=1.5) +
-  stat_summary(fun = mean, geom='point', shape=18, color="#ff7300", size=6) +
+  geom_boxplot(color="#703100", alpha=0.5, lwd=1.5, na.rm = TRUE) +
+  stat_summary(fun = mean, geom='point', shape=18, color="#ff7300", size=6, na.rm = TRUE, show.legend = TRUE) +
   scale_fill_gradient(low = "#fcba03", high = "#fc3003", aesthetics = "fill") + 
+  scale_shape_manual("", values=c("średnia"="x")) +
   guides(fill="none") +
-  labs(x = "liczba pełnych sezonów lidze (doświadczenie zawodnika)", 
-       y = "średnia liczba punktów na mecz", 
+  labs(x = "liczba pełnych sezonów lidze", 
+       y = "punkty / mecz", 
        title = "Liczba punktów vs. doświadczenie w lidze") +
-  theme(text = element_text(size=35))
+  theme(text = element_text(size=35), 
+        legend.position = c(0.9, 0.15),
+        legend.title = element_blank(),
+        legend.spacing.y = unit(0, "mm"), 
+        panel.border = element_rect(colour = "black", fill=NA),
+        legend.background = element_blank(),
+        legend.box.background = element_rect(colour = "black"))
 @
 
-\lipsum[1-5]
 \end{document}
