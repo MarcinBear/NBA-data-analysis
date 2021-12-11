@@ -11,3 +11,4 @@
 /knitr/*.gz
 /knitr/*.tex
 /knitr/*.txt
+/knitr/*.log
