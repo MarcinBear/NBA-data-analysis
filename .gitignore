@@ -12,3 +12,5 @@
 /knitr/*.tex
 /knitr/*.txt
 /knitr/*.log
+/knitr/*.pdf
+/knitr/figure/*.pdf
