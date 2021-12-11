@@ -81,7 +81,27 @@ Mimo że wewnętrzne statystyki klubów NBA są ściśle chronione, istnieją r�
 
 \section{Opis danych}
 
-Do analizy wykorzystamy tabelę z bazy danych ,,Basketball dataset (version 211)'' udostępnionej przez Wyatta Walsha na platformie Kaggle \hyperref[sec:sources]{[1]} (na licencji CC BY-SA 4.0 \hyperref[sec:sources]{[2]}).
+Do analizy wykorzystamy tabelę ,,Player\_Attributes'' z bazy danych ,,Basketball dataset (version 211)'' udostępnionej przez Wyatta Walsha na platformie Kaggle \hyperref[sec:sources]{[1]} (na licencji CC BY-SA 4.0 \hyperref[sec:sources]{[2]}). W tabeli znajdziemy aż 37 zmiennych określonych dla 4500 zawodników (zarówno aktywnych, jak i tych na sportowej emeryturze). Na potrzeby tej analizy wykorzystamy jedynie 9 interesujących nas cech: imię i nazwisko zawodnika, wzrost, narodowość, nazwę klubu, średnią liczbę punktów/asyst/zbiórek na mecz, nominalną pozycję oraz liczbę pełnych sezonów rozegranych w lidze.
+
+Część danych zawiera braki --- nie każdy zawodnik ma przypisany wzrost, czy wszystkie statystyki meczowe. Nie znamy również dokładnej metody kojarzenia zawodnika z danym klubem. Autor bazy danych nie podał informacji na jakiej zasadzie graczom przypisywany jest zespół, ale wiemy, że nie jest to ostatni klub w którym emerytowany już zawodnik kończył karierę (gdyby tak było Michael Jordan byłby skojarzony z Washington Wizards, a jest z Chicago Bulls). Na potrzeby tej analizy zakładamy, że graczom przypisywany jest klub w którym zaliczyli najwięcej występów meczowych, jednak nie dysponujemy danymi by móc jednoznacznie potwierdzić zasadność tej interpretacji.
+
+W tabeli \ref{tab:stat1} umieściliśmy krótkie podsumowanie dla zmiennych numerycznych. Widzimy, że braków danych jest stosunkowo niewiele jak na 4500 rekordów. Dla zbiórek\footnote{Na przestrzeni całej pracy będziemy posługiwać się wygodnym skrótem myślowym --- pisząć ,,zbiórki'', ,,asysty'' lub ,,punkty'' zawodnika, mamy oczywiście na myśli ich średnią liczbę w przeliczeniu na jeden mecz.} mamy znacząco więcej braków niż dla pozostałych statystyk meczowych. Być może wpływ ma na to fakt, że zbiórki w meczach zostały oficjalnie zliczane dopiero od 1950 roku, w piątym sezonie ligi NBA.
+
+\begin{table}[]
+\centering
+\begin{tabular}{lccccc}
+\hline
+\textbf{}      & \textbf{min.} & \textbf{max.} & \textbf{średnia} & \textbf{mediana} & \textbf{braków} \\ \hline
+wzrost         & 1.625         & 2.275         & 1.952            & 1.95             & 97              \\
+punkty         & 0             & 31.8          & 6.36             & 5.1              & 15              \\
+asysty         & 0             & 11.2          & 1.44             & 1                & 15              \\
+zbiórki        & 0             & 22.9          & 2.98             & 2.4              & 307             \\
+liczba sezonów & 0             & 22            & 4.3              & 3                & 0               \\ \hline
+\end{tabular}
+\caption{Podsumowanie zmiennych numerycznych.}
+\label{tab:stat1}
+\end{table}
+
 <<echo=F, fig.width=19, fig.height=11, fig.align="center", fig.cap="podpis rysunku">>=
 
 # nrow(df[(df$POSITION == ""), ])   # only 60 guys haven't specified position, so we will ignore them

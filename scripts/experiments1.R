@@ -3,7 +3,7 @@ library(dplyr)
 
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path))  # set working dir to current folder
 df <- read.csv("../data/cleaned_nba_dataset.csv")  # the same df as in main.rnw after cleaning
-
+summary(df)
 
 existing_teams <- c('Lakers', 'Clippers', 'Kings', 'Rockets', 'Nuggets', 'Thunder',
                     'Trail Blazers', 'Bucks', 'Warriors', 'Knicks', 'Magic', 'Suns',
