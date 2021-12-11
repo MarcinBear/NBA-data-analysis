@@ -6,6 +6,9 @@
 \usepackage{amssymb}
 \usepackage{lipsum} 
 \usepackage{titling}
+\usepackage{hyperref}
+\renewcommand{\refname}{Źródła}
+
 \author{Marcin Miśkiewicz, Adrian Sobczak}
 \title{\textbf{Analiza podstawowych statystyk meczowych zawodników ligi NBA}}
 \date{\today}
@@ -67,6 +70,7 @@ df$HEIGHT <- df$HEIGHT * 2.5 / 100  # Inch to m
 @
 
 \maketitle
+
 \section{Wprowadzenie}
 
 Odkąd profesjonalne organizacje sportowe zaczęły zatrudniać na pełen etat analityków i statystyków, charakter całych dyscyplin uległ pewnego rodzaju rewolucji. Specjaliści od danych z miejsca stali się bezpośrednimi doradcami kadry trenerskiej, a wyniki ich prac wprowadziły nowe trendy w sposobach treningu i samej gry. Dzisiaj system szkolenia oparty jedynie na solidnym przygotowaniu fizycznym ustępuje miejsca podejściu strategicznemu, mającemu w arsenale analizy wideo, pomiary wydolnościowe czy taktyki wyliczone pod konkretnych rywali. Jako kolebkę wdrażania zaawansowanej statystyki do sportu powszechnie uznaje się najsilniejszą ligę koszykarską na świecie --- NBA (\emph{National Basketball Association}). Dopiero amerykańscy pionierzy zainspirowali nowym sposobem myślenia działaczy z innych dyscyplin, takich jak piłka nożna czy siatkówka.
@@ -76,6 +80,8 @@ Odkąd profesjonalne organizacje sportowe zaczęły zatrudniać na pełen etat a
 Mimo że wewnętrzne statystyki klubów NBA są ściśle chronione, istnieją również powszechne bazy danych gromadzące szereg informacji na temat konkretnych zawodników. W niniejszej pracy wykorzystamy jeden z takich zbiorów i na jego podstawie wysuniemy garść wniosków m.in na temat panujących trendów w lidze, czy zależności pomiędzy poszczególnymi wynikami i parametrami fizycznymi graczy. Głównym celem analizy będzie uzyskanie charakterystyki najskuteczniejszych zawodników, czyli innymi słowy, odpowiedzenie na pytanie co łączy ze sobą najlepszych graczy. Przy okazji wyróżnimy zawodników o profilach unikalnych --- grających inaczej niż większość teoretycznie podobnych do nich koszykarzy.
 
 \section{Opis danych}
+
+Do analizy wykorzystamy tabelę z bazy danych ,,Basketball dataset (version 211)'' udostępnionej przez Wyatta Walsha na platformie Kaggle \hyperref[sec:sources]{[1]} (na licencji CC BY-SA 4.0 \hyperref[sec:sources]{[2]}).
 <<echo=F, fig.width=19, fig.height=11, fig.align="center", fig.cap="podpis rysunku">>=
 
 # nrow(df[(df$POSITION == ""), ])   # only 60 guys haven't specified position, so we will ignore them
@@ -125,5 +131,14 @@ ggplot(data=df, aes(x=SEASON_EXP, y=PTS, group=SEASON_EXP, fill=SEASON_EXP)) +
         legend.background = element_blank(),
         legend.box.background = element_rect(colour = "black"))
 @
+
+	\section*{Źródła}\label{sec:sources} % bibtex nie działał nam dobrze z knitrem, dlatego bibliografię robimy na około
+\indent	
+
+  [1] \hspace{0.2cm} \href{https://www.kaggle.com/wyattowalsh/basketball}{\emph{www.kaggle.com/wyattowalsh/basketball}}
+	\vspace{0.2cm}
+	
+	[2] \hspace{0.2cm} \href{https://creativecommons.org/licenses/by-sa/4.0/}{\emph{creativecommons.org/licenses/by-sa/4.0/}}
+	
 
 \end{document}
