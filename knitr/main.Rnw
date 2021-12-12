@@ -32,7 +32,7 @@ knit_hooks$set(inline = inline_hook)
 # ------------------------------------------- LIBRARIES + global ggplot config
 library(ggplot2)
 library(StatMeasures)
-#library(ggpubr) <biblioteka do łączenia wykresów w ggplot, ale coś nie działa>
+library(tidyr)
 
 theme_set(theme_bw(base_size = 35))
 theme_update(plot.title = element_text(hjust = 0.5),
@@ -162,57 +162,28 @@ Dodajmy jeszcze, że każdy zawodnik ma przypisaną narodowość oraz nie ma zaw
 
 Koszykówka z założenia jest sportem faworyzującym wysokich zawodników. Chociaż liga NBA gościła i niższych graczy, którzy byli w stanie nadrobić szybkością i sprytem na boisku, to dla ogółu graczy wzrost daje nieocenioną przewagę. Dlatego w poszukiwaniu najskuteczniejszych zawodników zaczniemy od sprawdzenia wyników na podstawie wzrostu.
 
-<<echo=F, fig.width=14, fig.height=5, fig.align="center", fig.cap="podpis rysunku">>=
-#p1 <- ggplot(df2, aes(x=HEIGHT, y=REB, na.rm=TRUE, color=POSITION, shape=POSITION)) +
-#     geom_jitter(size=4, stroke=1.4, alpha=0.4, na.rm=TRUE, width=0.01) +
-#     scale_color_manual(values=MY_PALETTE1[1:4]) +
-#     scale_shape_manual(values=c(1, 2, 5, 6)) +
-#     guides(color = guide_legend(override.aes = list(size = 10))) +
-#     labs(x = "wzrost", 
-#          y = "asysty / mecz", 
-#          subtitle = "Zbiórki vs. wzrost") +
-#     theme(text = element_text(size=35))
-#p2 <-  ggplot(df2, aes(x=HEIGHT, y=PTS, na.rm=TRUE, color=POSITION, shape=POSITION)) +
-#     geom_jitter(size=4, stroke=1.4, alpha=0.4, na.rm=TRUE, width=0.01) +
-#     scale_color_manual(values=MY_PALETTE1[1:4]) +
-#     scale_shape_manual(values=c(1, 2, 5, 6)) +
-#     guides(color = guide_legend(override.aes = list(size = 10))) +
-#     labs(x = "wzrost", 
-#          y = "asysty / mecz", 
-#          subtitle = "Punkty vs. wzrost") +
-#     theme(text = element_text(size=35))
-#p3 <- ggplot(df2, aes(x=HEIGHT, y=AST, na.rm=TRUE, color=POSITION, shape=POSITION)) +
-#     geom_jitter(size=4, stroke=1.4, alpha=0.4, na.rm=TRUE, width=0.01) +
-#     scale_color_manual(values=MY_PALETTE1[1:4]) +
-#     scale_shape_manual(values=c(1, 2, 5, 6)) +
-#     guides(color = guide_legend(override.aes = list(size = 10))) +
-#     labs(x = "wzrost", 
-#          y = "asysty / mecz", 
-#          subtitle = "Asysty vs. wzrost") +
-#     theme(text = element_text(size=35))
-#ggarrange(p1, p2, p3, ncol=1, nrow=3)
+<<echo=F, fig.width=21, fig.height=18, fig.align="center", fig.cap="Wykresy rozrzutu dla asyst, punktów i zbiórek, względem wzrostu.">>=
+afig_df <- df[!(df$POSITION == ""), ]
+
+afig_df %>%
+pivot_longer(cols=c(AST, PTS, REB), values_to="values", names_to="key") %>%
+ggplot(aes(x=HEIGHT, y=values, na.rm=TRUE, color=POSITION, shape=POSITION)) +
+  geom_jitter(size=3, stroke=1.4, alpha=0.4, na.rm=TRUE, width=0.01) +
+  scale_color_manual(values=MY_PALETTE1[1:3]) +
+  scale_shape_manual(values=c(1, 2, 5)) +
+  guides(color = guide_legend(override.aes = list(size = 10))) +
+  labs(x = "wzrost", 
+       subtitle = "Wzrost vs. osiągi", colour="Pozycja", shape="Pozycja") +
+  theme(text = element_text(size=35)) +
+  facet_grid(key ~ ., scales = "free_y", switch = "y",
+             labeller = as_labeller(
+               c(AST = "asysty", PTS = "punkty", REB = "zbiórki"))) +
+  ylab(NULL) + 
+  theme(strip.background = element_blank(),
+        strip.placement = "outside")
 @  
 
-Na wykresach widzimy, że biorąc za punkt odniesienia wzrost, ciężko nam będzie wyznaczyć najskuteczniejszych graczy. Chociaż można podejrzewać, że wzrost ma istotny wpływ na skuteczność w zbiórkach, to z jakichś przyczyn wyżsi gracze zdają się gorzej asystować. W zdobywaniu punktów wzrost zaś zdaje się w ogóle nie mieć znaczenia.
-
-<<echo=F, fig.width=19, fig.height=5, fig.align="center", fig.cap="podpis rysunku">>=
-# 
-# # nrow(df[(df$POSITION == ""), ])   # only 60 guys haven't specified position, so we will ignore them
-# df2 <- df[!(df$POSITION == ""), ]
-# 
-# ggplot(df2, aes(AST, REB, shape=POSITION, color=POSITION, na.rm=TRUE)) +
-#     geom_point(size=4, stroke=1.4, alpha=0.4, na.rm=TRUE) +
-#     geom_smooth(method = "lm", show.legend = FALSE, na.rm=TRUE) +
-#     scale_color_manual(values=MY_PALETTE1[1:3]) +
-#     scale_shape_manual(values=c(1, 2, 5)) +
-#     guides(color = guide_legend(override.aes = list(size = 10))) +
-#     labs(x = "asysty / mecz", 
-#          y = "zbiórki / mecz", 
-#          title = "Zbiórki vs. asysty",
-#          subtitle = sprintf("Wykres rozrzutu z naniesionymi liniami trendu"))
-@
-
-
+Na wykresach z powodu zaokrąglenia do jednego miejsca po przecinku w calach (co przekłąda się na jeszcze mniejszą dokładność w centymetrach) wzrost zdawałby się mieć charakter dyskretny, stąd decyzja na losowe rozrzucenie rozrzucenie go, w celu lepszego odwzorowania wizualnego. Widzimy, że biorąc za punkt odniesienia wzrost, ciężko nam będzie wyznaczyć najskuteczniejszych graczy. Chociaż można podejrzewać, że wzrost ma istotny wpływ na skuteczność w zbiórkach, to z jakichś przyczyn wyżsi gracze zdają się gorzej asystować.
 
 
 \subsection{Wpływ doświadczenia na wyniki meczowe}
