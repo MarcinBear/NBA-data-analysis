@@ -31,7 +31,6 @@ knit_hooks$set(inline = inline_hook)
 << LIBRARIES + global ggplot config, echo=F>>=
 # ------------------------------------------- LIBRARIES + global ggplot config
 library(ggplot2)
-library(StatMeasures)
 #library(ggpubr) <biblioteka do łączenia wykresów w ggplot, ale coś nie działa>
 
 theme_set(theme_bw(base_size = 35))
@@ -93,7 +92,7 @@ Mimo że wewnętrzne statystyki klubów NBA są ściśle chronione, istnieją r�
 
 \section{Opis danych}
 
-Do analizy wykorzystamy tabelę ,,Player\_Attributes'' z bazy danych ,,Basketball dataset (version 211)'' udostępnionej przez Wyatta Walsha na platformie Kaggle \hyperref[sec:sources]{[1]} (na licencji CC BY-SA 4.0 \hyperref[sec:sources]{[2]}). Zaznaczmy, że na moment pobrania danych, ich ostatnia aktualizacja odbyła się 15 stycznia 2021 roku. W tabeli znajdziemy aż 37 zmiennych określonych dla 4500 zawodników (zarówno aktywnych, jak i tych na sportowej emeryturze). Na potrzeby tej analizy wykorzystamy jedynie 9 interesujących nas cech: imię i nazwisko zawodnika, wzrost, narodowość, nazwę klubu, średnią liczbę punktów/asyst/zbiórek na mecz, nominalną pozycję oraz liczbę pełnych sezonów rozegranych w lidze.
+Do analizy wykorzystamy tabelę ,,Player\_Attributes'' z bazy danych ,,Basketball dataset (version 211)'' udostępnionej przez Wyatta Walsha na platformie Kaggle \hyperref[sec:sources]{[1]} (na licencji CC BY-SA 4.0 \hyperref[sec:sources]{[2]}). W tabeli znajdziemy aż 37 zmiennych określonych dla 4500 zawodników (zarówno aktywnych, jak i tych na sportowej emeryturze). Na potrzeby tej analizy wykorzystamy jedynie 9 interesujących nas cech: imię i nazwisko zawodnika, wzrost, narodowość, nazwę klubu, średnią liczbę punktów/asyst/zbiórek na mecz, nominalną pozycję oraz liczbę pełnych sezonów rozegranych w lidze.
 
 \subsection{Przygotowanie zmiennych ilościowych}
 Część danych zawiera braki --- nie każdy zawodnik ma przypisany wzrost, czy wszystkie statystyki meczowe. W tabeli [\ref{tab:stat1}] umieściliśmy krótkie podsumowanie dla zmiennych ilościowych. Widzimy, że braków danych jest stosunkowo niewiele jak na 4500 rekordów. Dla zbiórek\footnote{Na przestrzeni całej pracy będziemy posługiwać się wygodnym skrótem myślowym --- pisząć ,,zbiórki'', ,,asysty'' lub ,,punkty'' zawodnika, mamy oczywiście na myśli ich średnią liczbę w przeliczeniu na jeden mecz.} mamy znacząco więcej braków niż dla pozostałych statystyk meczowych. Być może wpływ ma na to fakt, że zbiórki w meczach zostały oficjalnie zliczane dopiero od 1950 roku, w piątym sezonie ligi NBA. 
@@ -213,40 +212,25 @@ Na wykresach widzimy, że biorąc za punkt odniesienia wzrost, ciężko nam będ
 @
 
 
-
-
-\subsection{Wpływ doświadczenia na wyniki meczowe}
-
-Czy przeciętny ligowy weteran to lepszy wybór dla trenera niż przeciętny \emph{rookie}\footnote{\emph{rookie} (ang.) --- debiutant, nowicjusz, żółtodziób. W koszykarskim żargonie jest to powszechnie stosowane określenie na niedoświadczonych zawodników.}? A może to ambitna młodzież rządzi na parkiecie? Odpowiedź na te pytania nie jest jednoznaczna. Jednak na podstawie rozpatrywanych danych możemy wyciągnąć szereg ciekawych wniosków. Na rysunku \ref{fig:exp_boxplots} widzimy łańcuch wykresów pudełkowych średniej liczby punktów na mecz, skonstruowanych dla zawodników o konkretnym doświadczeniu w lidze. Od razu możemy zauważyć, że wraz z doświadczeniem, średnia liczba punktów na mecz zawodnika w większości przypadków rośnie. Jest to zaskakująco wyraźny trend --- przeciętnie, doświadczeni gracze zdobywają znacznie więcej punktów. Jednak zawodnikiem punktującym najlepiej wcale nie jest weteran. Mający 8 lat doświadczenia w lidze Bradley Beal rzuca średnio 31.8 punktów na mecz. Wyniki pojedynczych drużyn w meczach NBA oscylują często wokół liczby 90, zatem można powiedzieć, że Bradley odpowiada zwykle za jedną trzecią zdobyczy punktowej swojego zespołu. Na drugim miejscu, z wynikiem 30.1 punktów, uplasowali się ex aequo Michael Jordan (14 sezonów w NBA), Wilt Chamberlain (13 sezonów w NBA) oraz Damian Lillard (8 sezonów w NBA). 
-
-Analizując dalej rysunek \ref{fig:exp_boxplots}, możemy zauważyć, że wraz ze wzorstem doświadczenia, w większości przypadków zwiększa się rozstęp międzykwartylowy próbki. Jednocześnie przy tym maleje liczba obserwacji nietypowych. Dla zawodników, którzy w NBA rozegrali 0, 1, 2, 3, 4 i 5 pełnych sezonów mamy odpowiednio \Sexpr{outliers(df[df$SEASON_EXP == 0, ]$PTS)[1]}, \Sexpr{outliers(df[df$SEASON_EXP == 1, ]$PTS)[1]}, \Sexpr{outliers(df[df$SEASON_EXP == 2, ]$PTS)[1]}, \Sexpr{outliers(df[df$SEASON_EXP == 3, ]$PTS)[1]}, \Sexpr{outliers(df[df$SEASON_EXP == 4, ]$PTS)[1]} i \Sexpr{outliers(df[df$SEASON_EXP == 5, ]$PTS)[1]} obserwacji nietypowych. Warto także zaznaczyć, że w żadnym przypadku nie otrzymujemy obserwacji nietypowo małych --- nieszablonowi zawodnicy to wyłącznie ci którzy zaskakują w pozytywnym sensie.
-
-Dodajmy, że tylko dwóch koszykarzy rozegrało dokładnie 20 pełnych sezonów w lidze (Jamal Crawford i Robert Parish) i tylko jeden rozegrał dokładnie 22 pełne sezony (Vince Carter).
-
-Dla średniej asyst i zbiórek również obserwujemy tendencję wzrostową przy rosnącym doświadczeniu, jednak efekt ten nie jest aż tak wyraźny jak w przypadku punktów. Rozstępy międzykwartylowe także się zwiększają, a liczba obserwacji nietypowych stopniowo maleje.
-
-Na podstawie powyższych analiz, możemy stwierdzić, że opcją ,,bezpieczniejszą'' dla trenera jest zakontraktowanie zawodnika grającego dłużej w lidze. Oczywiście mówimy tu o czysto teoretycznej sytuacji, w której trener musiałby podjąć decyzję dysponując jedynie informacją o doświadczeniu ligowym kandydatów do składu.
-
-<<echo=F, fig.width=19, fig.height=11, fig.align="center", fig.cap="\\label{fig:exp_boxplots}Wykresy pudełkowe śrendiej liczby punktów na mecz dla zawodników o konkretnym doświadczeniu w lidze.">>=
-
-ggplot(data=df, aes(x=SEASON_EXP, y=PTS, group=SEASON_EXP, fill=SEASON_EXP)) +
-  geom_boxplot(color="#703100", alpha=0.5, lwd=1.5, na.rm = TRUE) +
-  stat_summary(fun = mean, geom='point', shape=18, color="#ff7300", size=6, na.rm = TRUE, show.legend = TRUE) +
-  scale_fill_gradient(low = "#fcba03", high = "#fc3003", aesthetics = "fill") +
-  scale_shape_manual("", values=c("średnia"="x")) +
-  guides(fill="none") +
-  labs(x = "liczba pełnych sezonów lidze",
-       y = "punkty / mecz",
-       title = "Liczba punktów vs. doświadczenie w lidze") +
-  theme(text = element_text(size=35),
-        legend.position = c(0.9, 0.15),
-        legend.title = element_blank(),
-        legend.spacing.y = unit(0, "mm"),
-        panel.border = element_rect(colour = "black", fill=NA),
-        legend.background = element_blank(),
-        legend.box.background = element_rect(colour = "black"))
+<<echo=F, fig.width=19, fig.height=11, fig.align="center", fig.cap="Komentarz: tylko dwóch zawodników rozegrało dokładnie 20 pełnych sezonów w lidze (Jamal Crawford i Robert Parish) i tylko jeden zawodnik rozegrał dokładnie 22 pełne sezony (Vince Carter).">>=
+# 
+# ggplot(data=df, aes(x=SEASON_EXP, y=PTS, group=SEASON_EXP, fill=SEASON_EXP)) +
+#   geom_boxplot(color="#703100", alpha=0.5, lwd=1.5, na.rm = TRUE) +
+#   stat_summary(fun = mean, geom='point', shape=18, color="#ff7300", size=6, na.rm = TRUE, show.legend = TRUE) +
+#   scale_fill_gradient(low = "#fcba03", high = "#fc3003", aesthetics = "fill") + 
+#   scale_shape_manual("", values=c("średnia"="x")) +
+#   guides(fill="none") +
+#   labs(x = "liczba pełnych sezonów lidze", 
+#        y = "punkty / mecz", 
+#        title = "Liczba punktów vs. doświadczenie w lidze") +
+#   theme(text = element_text(size=35), 
+#         legend.position = c(0.9, 0.15),
+#         legend.title = element_blank(),
+#         legend.spacing.y = unit(0, "mm"), 
+#         panel.border = element_rect(colour = "black", fill=NA),
+#         legend.background = element_blank(),
+#         legend.box.background = element_rect(colour = "black"))
 @
-
 
 	\section*{Źródła}\label{sec:sources} % bibtex nie działał nam dobrze z knitrem, dlatego bibliografię robimy na około
 \indent	
