@@ -164,7 +164,7 @@ Analizę danych podzielimy na kilka pomniejszych, wybranych przez nas problemów
 
 Koszykówka z~założenia jest sportem faworyzującym wysokich zawodników. Chociaż liga NBA gościła i~niższych graczy, powszechnie wiadomo, że wzrost daje nieocenioną przewagę. Dlatego w~poszukiwaniu najskuteczniejszych zawodników zaczniemy od sprawdzenia wyników na podstawie wzrostu.
 
-<<echo=F, fig.width=21, fig.height=19, fig.align="center", fig.cap="\\label{fig:height}Wykresy rozrzutu dla asyst, punktów i zbiórek, względem wzrostu.">>=
+<<echo=F, fig.width=21, fig.height=19, fig.align="center", fig.cap="\\label{fig:height}Wykresy rozrzutu dla asyst, punktów i zbiórek, względem wzrostu. Rysunek nie uwzględnia zawodników dla których wzrost lub rozpatrywane statystyki meczowe są nieznane.">>=
 afig_df <- df[!(df$POSITION == ""), ]
 
 afig_df %>%
@@ -175,7 +175,7 @@ ggplot(aes(x=HEIGHT, y=values, na.rm=TRUE, color=POSITION, shape=POSITION)) +
   scale_shape_manual(values=c(1, 2, 5)) +
   guides(color = guide_legend(override.aes = list(size = 10))) +
   labs(x = "wzrost [m]", 
-       subtitle = "Wzrost vs. osiągi", 
+       subtitle = "Statystyki meczowe vs. wzrost", 
        colour="Pozycja", 
        shape="Pozycja") +
   theme(text = element_text(size=35)) +
@@ -192,7 +192,7 @@ ggplot(aes(x=HEIGHT, y=values, na.rm=TRUE, color=POSITION, shape=POSITION)) +
 @  
 
 
-W rozpatrywanych danych wzrost został podany z dokładnością do jednego cala (czyli po konwersji 2,54 cm). Jest to zaskakująco niska dokładność, dlatego, do celów graficznych, dodamy do wzrostu każdego z~graczy niewielki szum losowy. Nie wpłynie on znacząco na charakter zmiennej, ale za to zapobiegnie nakładaniu się punktów podczas rysowania wykresu i poprawi ogólną czytelność. 
+W rozpatrywanych danych wzrost został podany z dokładnością do jednego cala (czyli po konwersji 2,54 cm). Jest to zaskakująco niska dokładność, dlatego, do celów graficznych, dodamy do wzrostu każdego z~graczy niewielki szum losowy. Nie wpłynie on znacząco na charakter zmiennej, ale za to zapobiegnie nakładaniu się punktów podczas rysowania wykresu i poprawi ogólną czytelność.
 
 Rysunek \ref{fig:height} przedstawia zależność podstawowych statystyk meczowych od wzrostu zawodnika. Pierwszym co rzuca się w~oczy jest wyraźne rozgraniczenie pozycji koszykarzy względem osi poziomej --- \emph{Guard} są zwykle najniżsi, \emph{Center} najwyżsi, a \emph{Forward} gdzieś pomiędzy. Na podstawie wykresu możemy stwierdzić, że statystyki meczowe nie są tak mocno skorelowane ze wzrostem gracza jak możnaby przypuszczać. Co więcej, okazuje się nawet, że pod względem asyst zawodnicy niżsi zdają się być skuteczniejsi. Należy tu jednak być ostrożnym. Stwierdzenie, że wyżsi są gorsi w podawaniu piłki byłoby pewnym nadużyciem, gdyż domyślamy się, że podkoszowi z założenia mają inne zadania na parkiecie. Dlatego rysunek \ref{fig:height} wskazuje nam na to kto asystuje, punktuje i zbiera mniej lub więcej, a nie gorzej czy lepiej.
 
@@ -260,7 +260,7 @@ df5$stats <- ifelse((df5$PTS > quartile3(df4$PTS)) & (df5$AST > quartile3(df4$AS
 
 @
 
-Czy istnieją drużyny w~NBA specjalizujące się w~zrzeszaniu zawodników o~ponadprzeciętnych umiejętnościach? Aby móc odpowiedzieć na to pytanie, należy zdefiniować umowną granicę pomiędzy graczem zwykłym, a~wyjątkowym. Przyjmijmy, że gracze wyjątkowi to ci, dla których dwie najważniejsze statystyki meczowe --- punkty i~asysty --- są jednocześnie większe niż odpowiadające im mediany wyliczone dla danych z~całej ligi (wartości median znajdują się w~tabeli \ref{tab:stat1}). Jeśli zawodnik spełnia ten warunek również dla trzecich kwartyli statystyk, to mówimy, że jest unikalny. Nie uwzględniamy zbiórek ze względu na to, że nie znamy ich wartości aż dla 307 zawodników, a~pominięcie tak wielu obserwacji wpłynęłoby negatywnie na wyniki.
+Czy istnieją drużyny w~NBA specjalizujące się w~zrzeszaniu zawodników o~ponadprzeciętnych umiejętnościach? Aby móc odpowiedzieć na to pytanie, należy zdefiniować umowną granicę pomiędzy graczem zwykłym, a~wyjątkowym. Przyjmijmy, że gracze wyjątkowi to ci, dla których dwie najważniejsze statystyki meczowe --- punkty i~asysty, są jednocześnie większe niż odpowiadające im mediany wyliczone dla danych z~całej ligi (wartości median znajdują się w~tabeli \ref{tab:stat1}). Jeśli zawodnik spełnia ten warunek również dla trzecich kwartyli statystyk, to mówimy, że jest unikalny. Nie uwzględniamy zbiórek ze względu na to, że nie znamy ich wartości aż dla 307 zawodników, a~pominięcie tak wielu obserwacji wpłynęłoby negatywnie na wyniki.
 Zawodników z~brakami danych dla punktów i asyst jest stosunkowo niewielu, dlatego decydujemy się by nie uwzględniać ich w~analizie. 
 
 Wykorzystując dostępny zbiór danych, możemy sporządzić wykres liczby wyjątkowych i~unikalnych zawodników w historii poszczególnych drużyn NBA. Na rysunku \ref{fig:club_barplot} kolorem niebieskiem wyróżnione zostały zespoły aktywne, a kolorem żółtym zespoły już nieistniejące. Odcień jaśniejszy wskazuje na liczbę graczy wyjątkowych (ale nie unikalnych), a~odcień ciemniejszy na liczbę graczy unikalnych.
