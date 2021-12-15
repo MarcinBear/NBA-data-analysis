@@ -117,7 +117,7 @@ nasSEASONS <- sum(is.na(df$SEASON_EXP))
 
 \section{Wprowadzenie}
 
-Odkąd profesjonalne organizacje sportowe zaczęły zatrudniać na pełen etat analityków i~statystyków, charakter całych dyscyplin uległ pewnego rodzaju rewolucji. Specjaliści od danych z miejsca stali się bezpośrednimi doradcami kadry trenerskiej, a~wyniki ich prac wprowadziły nowe trendy w sposobach treningu i~samej gry. Dzisiaj system szkolenia oparty jedynie na solidnym przygotowaniu fizycznym ustępuje miejsca podejściu strategicznemu, mającemu w arsenale analizy wideo, pomiary wydolnościowe czy taktyki wyliczone pod konkretnych rywali. Jako kolebkę wdrażania zaawansowanej statystyki do sportu powszechnie uznaje się najsilniejszą ligę koszykarską na świecie --- NBA (\emph{National Basketball Association}). Dopiero amerykańscy pionierzy zainspirowali nowym sposobem myślenia działaczy z innych dyscyplin, takich jak piłka nożna czy siatkówka.
+Odkąd profesjonalne organizacje sportowe zaczęły zatrudniać na pełen etat analityków i~statystyków, charakter całych dyscyplin uległ pewnego rodzaju rewolucji. Specjaliści od danych z miejsca stali się bezpośrednimi doradcami kadry trenerskiej, a~wyniki ich prac wprowadziły nowe trendy w sposobach treningu i~samej gry. Dzisiaj system szkolenia oparty jedynie na solidnym przygotowaniu fizycznym ustępuje miejsca podejściu strategicznemu, mającemu w arsenale analizy wideo, pomiary wydolnościowe czy taktyki wyliczone pod konkretnych rywali. Jako kolebkę wdrażania zaawansowanej statystyki do sportu powszechnie uznaje się najsilniejszą ligę koszykarską na świecie ---~NBA (\emph{National Basketball Association}). Dopiero amerykańscy pionierzy zainspirowali nowym sposobem myślenia działaczy z innych dyscyplin, takich jak piłka nożna czy siatkówka.
 
 \section{Cel pracy}
 
@@ -125,7 +125,7 @@ Mimo że wewnętrzne statystyki klubów NBA są ściśle chronione, istnieją r�
 
 \section{Opis danych}
 
-Do analizy wykorzystamy tabelę ,,Player\_Attributes'' z bazy danych ,,Basketball dataset (version 211)'' udostępnionej przez Wyatta Walsha na platformie Kaggle \hyperref[sec:sources]{[1]} (na licencji CC BY-SA 4.0 \hyperref[sec:sources]{[2]}). Zaznaczmy, że na moment pobrania danych, ich ostatnia aktualizacja odbyła się 15 stycznia 2021 roku. W tabeli znajdziemy aż 37 zmiennych określonych dla 4500 zawodników (zarówno aktywnych, jak i~tych na sportowej emeryturze). Na potrzeby tej analizy wykorzystamy jedynie 9 interesujących nas cech: imię i~nazwisko zawodnika, wzrost, narodowość, nazwę klubu, średnią liczbę punktów/asyst/zbiórek na mecz, nominalną pozycję oraz liczbę pełnych sezonów rozegranych w~lidze.
+Do analizy wykorzystamy tabelę ,,Player\_Attributes'' z bazy danych ,,Basketball dataset (version 211)'' udostępnionej przez Wyatta Walsha na platformie Kaggle \hyperref[sec:sources]{[1]} (na licencji CC BY-SA 4.0 \hyperref[sec:sources]{[2]}). Zaznaczmy, że na moment pobrania danych, ich ostatnia aktualizacja odbyła się 15 stycznia 2021 roku. W tabeli znajdziemy aż 37 zmiennych określonych dla 4500 zawodników (zarówno aktywnych, jak i~tych na sportowej emeryturze). Na potrzeby tej analizy wykorzystamy jedynie 8 interesujących nas cech: imię i~nazwisko zawodnika, wzrost, nazwę klubu, średnią liczbę punktów/asyst/zbiórek na mecz, nominalną pozycję oraz liczbę pełnych sezonów rozegranych w~lidze.
 
 \subsection{Przygotowanie zmiennych ilościowych}
 Część danych zawiera braki --- nie każdy zawodnik ma przypisany wzrost, czy wszystkie statystyki meczowe. W~tabeli \ref{tab:stat1} umieściliśmy krótkie podsumowanie dla zmiennych ilościowych. Widzimy, że braków danych jest stosunkowo niewiele jak na 4500 rekordów. Dla zbiórek\footnote{Na przestrzeni całej pracy będziemy posługiwać się wygodnym skrótem myślowym --- pisząć ,,zbiórki'', ,,asysty'' lub ,,punkty'' zawodnika, mamy oczywiście na myśli ich średnią liczbę w przeliczeniu na jeden mecz.} mamy znacząco więcej braków niż dla pozostałych statystyk meczowych. Być może wpływ ma na to fakt, że zbiórki w~meczach zostały oficjalnie zliczane dopiero od 1950 roku, w~piątym sezonie ligi NBA. 
@@ -154,11 +154,13 @@ W rozpatrywanym zbiorze danych możemy wyróżnić aż \Sexpr{length(table(df$TE
 
 W~analizowanych danych możemy wyróżnić 3 podstawowe pozycje koszykarskie: \emph{Guard} (rozgrywający i~rzucający obrońcy), \emph{Forward} (skrzydłowi) oraz \emph{Center} (podkoszowi). Dodatkowo niektórym zawodnikom przypisana jest kombinacja dwóch z wymienionych pozycji np. \emph{Center-Forward}, co w~tym przypadku oznacza podkoszowego, który może grać również na skrzydle. Dla uproszczenia analiz przyjmiemy, że w~przypadku takich graczy, jako nominalną pozycję na parkiecie, będziemy brać pierwszą z~wymienionych. Zatem wszystkich \emph{Center-Forward} klasyfikujemy jako \emph{Center}, a~wszystkich \emph{Forward-Center} jako \emph{Forward}. Zawodników bez przypisanej jakiejkolwiek pozycji mamy w~zbiorze danych zaledwie \Sexpr{length(df$POSITION[df$POSITION == ""])}.
 
-Dodajmy jeszcze, że każdy zawodnik ma przypisaną narodowość oraz nie ma zawodników bez wpisanego imienia i~nazwiska.
+Dodajmy jeszcze, że nie ma zawodników bez wpisanego imienia i~nazwiska.
 
 \section{Analiza} %wstępnie
 
-\subsection{Wzrost}
+Analizę danych podzielimy na kilka pomniejszych, wybranych przez nas problemów, dla których wnioski będziemy formułować na bieżąco. Ogół wyników i przemyśleń zbierzemy w sekcji \ref{summary}, gdzie postaramy się także odpowiedzieć na postawione wcześniej pytania badawcze. 
+
+\subsection{Czy w NBA wyższy znaczy lepszy?}
 
 Koszykówka z~założenia jest sportem faworyzującym wysokich zawodników. Chociaż liga NBA gościła i~niższych graczy, którzy byli w~stanie nadrobić szybkością i~sprytem na boisku, to dla ogółu graczy wzrost daje nieocenioną przewagę. Dlatego w~poszukiwaniu najskuteczniejszych zawodników zaczniemy od sprawdzenia wyników na podstawie wzrostu.
 
@@ -191,7 +193,7 @@ ggplot(aes(x=HEIGHT, y=values, na.rm=TRUE, color=POSITION, shape=POSITION)) +
 
 Na wykresach z~powodu zaokrąglenia do jednego miejsca po przecinku w calach (co przekłąda się na jeszcze mniejszą dokładność w centymetrach) wzrost zdawałby się mieć charakter dyskretny, stąd decyzja na losowe rozrzucenie rozrzucenie go, w~celu lepszego odwzorowania wizualnego. Widzimy, że biorąc za punkt odniesienia wzrost, ciężko nam będzie wyznaczyć najskuteczniejszych graczy. Chociaż można podejrzewać, że wzrost ma istotny wpływ na skuteczność w~zbiórkach, to z~jakichś przyczyn wyżsi gracze zdają się gorzej asystować.
 
-\subsection{Klub i narodowość}
+\subsection{Drużyna a wyjątkowość zawodników}
 
 <<echo=F>>=
 existing_teams <- c('Lakers', 'Clippers', 'Kings', 'Rockets', 'Nuggets', 'Thunder',
@@ -213,10 +215,11 @@ df4 <- df[!(df$TEAM == ''), ]
 df4$Status <- ifelse(df4$TEAM %in% existing_teams, "aktywna", "rozwiązana")
 
 df5 <- df4[(df4$PTS > medPTS) & (df4$AST > medAST), ]  # special players with teams assigned
-df5 <- subset(df5, select=c("TEAM", "PTS", "AST", "Status"))
+df5 <- subset(df5, select=c("COUNTRY", "TEAM", "PTS", "AST", "Status"))
 df5 <- df5[complete.cases(df5), ]
 
 df5$stats <- ifelse((df5$PTS > quartile3(df4$PTS)) & (df5$AST > quartile3(df4$AST)), "powyżej Q3", "pomiędzy Q2 i Q3")
+
 @
 
 Czy istnieją drużyny w~NBA specjalizujące się w~zrzeszaniu zawodników o~ponadprzeciętnych umiejętnościach? Aby móc odpowiedzieć na to pytanie, należy zdefiniować umowną granicę pomiędzy graczem zwykłym, a~wyjątkowym. Przyjmijmy, że gracze wyjątkowi to ci, dla których dwie najważniejsze statystyki meczowe --- punkty i~asysty --- są jednocześnie większe niż odpowiadające im mediany wyliczone dla danych z~całej ligi (wartości median znajdują się w~tabeli \ref{tab:stat1}). Jeśli zawodnik spełnia ten warunek również dla trzecich kwartyli statystyk, to mówimy, że jest unikalny. Nie uwzględniamy zbiórek ze względu na to, że nie znamy ich wartości aż dla 307 zawodników, a~pominięcie tak wielu obserwacji wpłynęłoby negatywnie na wyniki.
@@ -308,6 +311,7 @@ ggplot(df2, aes(AST, REB, shape=POSITION, color=POSITION, na.rm=TRUE, label=PLAY
   theme(text = element_text(size=40))
 @
 
+\section{Podsumowanie}\label{summary}
 
 	\section*{Źródła}\label{sec:sources} % bibtex nie działał nam dobrze z knitrem, dlatego bibliografię robimy na około
 \indent	
