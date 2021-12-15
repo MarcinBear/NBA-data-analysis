@@ -76,7 +76,7 @@ df$POSITION[df$POSITION == 'Forward-Guard']  <- 'Forward'
 df$POSITION[df$POSITION == 'Guard-Forward']  <- 'Guard'
 
 df$WEIGHT <- df$WEIGHT * 0.45       # LBS to kg
-df$HEIGHT <- df$HEIGHT * 2.5 / 100  # Inch to m
+df$HEIGHT <- df$HEIGHT * 2.54 / 100  # Inch to m
 
 df2 <- df[complete.cases(df), ]
 @
@@ -162,9 +162,9 @@ Analizę danych podzielimy na kilka pomniejszych, wybranych przez nas problemów
 
 \subsection{Czy w NBA wyższy znaczy lepszy?}
 
-Koszykówka z~założenia jest sportem faworyzującym wysokich zawodników. Chociaż liga NBA gościła i~niższych graczy, którzy byli w~stanie nadrobić szybkością i~sprytem na boisku, to dla ogółu graczy wzrost daje nieocenioną przewagę. Dlatego w~poszukiwaniu najskuteczniejszych zawodników zaczniemy od sprawdzenia wyników na podstawie wzrostu.
+Koszykówka z~założenia jest sportem faworyzującym wysokich zawodników. Chociaż liga NBA gościła i~niższych graczy, powszechnie wiadomo, że wzrost daje nieocenioną przewagę. Dlatego w~poszukiwaniu najskuteczniejszych zawodników zaczniemy od sprawdzenia wyników na podstawie wzrostu.
 
-<<echo=F, fig.width=21, fig.height=18, fig.align="center", fig.cap="Wykresy rozrzutu dla asyst, punktów i zbiórek, względem wzrostu.">>=
+<<echo=F, fig.width=21, fig.height=19, fig.align="center", fig.cap="\\label{fig:height}Wykresy rozrzutu dla asyst, punktów i zbiórek, względem wzrostu.">>=
 afig_df <- df[!(df$POSITION == ""), ]
 
 afig_df %>%
@@ -191,7 +191,45 @@ ggplot(aes(x=HEIGHT, y=values, na.rm=TRUE, color=POSITION, shape=POSITION)) +
         strip.placement = "outside", text = element_text(size=50))
 @  
 
-Na wykresach z~powodu zaokrąglenia do jednego miejsca po przecinku w calach (co przekłąda się na jeszcze mniejszą dokładność w centymetrach) wzrost zdawałby się mieć charakter dyskretny, stąd decyzja na losowe rozrzucenie rozrzucenie go, w~celu lepszego odwzorowania wizualnego. Widzimy, że biorąc za punkt odniesienia wzrost, ciężko nam będzie wyznaczyć najskuteczniejszych graczy. Chociaż można podejrzewać, że wzrost ma istotny wpływ na skuteczność w~zbiórkach, to z~jakichś przyczyn wyżsi gracze zdają się gorzej asystować.
+
+W rozpatrywanych danych wzrost został podany z dokładnością do jednego cala (czyli po konwersji 2,54 cm). Jest to zaskakująco niska dokładność, dlatego, do celów graficznych, dodamy do wzrostu każdego z~graczy niewielki szum losowy. Nie wpłynie on znacząco na charakter zmiennej, ale za to zapobiegnie nakładaniu się punktów podczas rysowania wykresu i poprawi ogólną czytelność. 
+
+Rysunek \ref{fig:height} przedstawia zależność podstawowych statystyk meczowych od wzrostu zawodnika. Pierwszym co rzuca się w~oczy jest wyraźne rozgraniczenie pozycji koszykarzy względem osi poziomej --- \emph{Guard} są zwykle najniżsi, \emph{Center} najwyżsi, a \emph{Forward} gdzieś pomiędzy. Na podstawie wykresu możemy stwierdzić, że statystyki meczowe nie są tak mocno skorelowane ze wzrostem gracza jak możnaby przypuszczać. Co więcej, okazuje się nawet, że pod względem asyst zawodnicy niżsi zdają się być skuteczniejsi. Należy tu jednak być ostrożnym. Stwierdzenie, że wyżsi są gorsi w podawaniu piłki byłoby pewnym nadużyciem, gdyż domyślamy się, że podkoszowi z założenia mają inne zadania na parkiecie. Dlatego rysunek \ref{fig:height} wskazuje nam na to kto asystuje, punktuje i zbiera mniej lub więcej, a nie gorzej czy lepiej.
+
+Możemy zauważyć, że w przypadku punktów, wzrost nie ma aż tak wielkiego znaczenia. Jednak przy zbieraniu piłki, nawet kilka centymetrów przewagi może zrobić różnicę w meczu.
+
+Naszym głównym wnioskiem, który wyciągamy z powyższej analizy, jest to, że w realiach NBA ponadprzeciętny wzrost nie gwarantuje lepszych wyników. Wybitnych graczy nie wyłonimy wybierając jedynie tych najwyższych, gdyż z różną budową ciała związane są różne pozycje i role w drużynie. Tak więc złożenie zespołu z samych podkoszowych byłoby prawdopodobnie taktycznym strzałem w kolano.
+
+\subsection{Korelacje między statystykami meczowymi}
+
+% 
+% <<echo=F, fig.width=23, fig.height=11, fig.align="center", fig.cap="podpis rysunku">>=
+% 
+% # nrow(df[(df$POSITION == ""), ])   # only 60 guys haven't specified position, so we will ignore them
+% df2 <- df[!(df$POSITION == ""), ]
+% 
+% ggplot(df2, aes(AST, REB, shape=POSITION, color=POSITION, na.rm=TRUE, label=PLAYER)) +
+%     geom_point(size=4, stroke=1.4, alpha=0.4, na.rm=TRUE) +
+%     geom_smooth(method = "lm", show.legend = FALSE, na.rm=TRUE) +
+%     geom_label_repel(data = subset(df2, AST*REB > 85), 
+%                      point.padding = 0, 
+%                      nudge_y=1,
+%                      nudge_x=-0.5,
+%                      alpha = 0.8, 
+%                      show.legend = FALSE,
+%                      size = 9) +
+%     scale_color_manual(values=MY_PALETTE1[1:3]) +
+%     scale_shape_manual(values=c(1, 2, 5)) +
+%     guides(color = guide_legend(override.aes = list(size = 10))) +
+%     labs(x = "asysty",
+%          y = "zbiórki",
+%          colour="Pozycja", 
+%          shape="Pozycja",
+%          title = "Zbiórki vs. asysty",
+%          subtitle = sprintf("Wykres rozrzutu z naniesionymi liniami trendu")) + 
+%   theme(text = element_text(size=40))
+% @
+
 
 \subsection{Drużyna a wyjątkowość zawodników}
 
@@ -284,32 +322,6 @@ ggplot(data=df, aes(x=SEASON_EXP, y=PTS, group=SEASON_EXP, fill=SEASON_EXP)) +
         legend.box.background = element_rect(colour = "black"))
 @
 
-<<echo=F, fig.width=23, fig.height=11, fig.align="center", fig.cap="podpis rysunku">>=
-
-# nrow(df[(df$POSITION == ""), ])   # only 60 guys haven't specified position, so we will ignore them
-df2 <- df[!(df$POSITION == ""), ]
-
-ggplot(df2, aes(AST, REB, shape=POSITION, color=POSITION, na.rm=TRUE, label=PLAYER)) +
-    geom_point(size=4, stroke=1.4, alpha=0.4, na.rm=TRUE) +
-    geom_smooth(method = "lm", show.legend = FALSE, na.rm=TRUE) +
-    geom_label_repel(data = subset(df2, AST*REB > 85), 
-                     point.padding = 0, 
-                     nudge_y=1,
-                     nudge_x=-0.5,
-                     alpha = 0.8, 
-                     show.legend = FALSE,
-                     size = 9) +
-    scale_color_manual(values=MY_PALETTE1[1:3]) +
-    scale_shape_manual(values=c(1, 2, 5)) +
-    guides(color = guide_legend(override.aes = list(size = 10))) +
-    labs(x = "asysty",
-         y = "zbiórki",
-         colour="Pozycja", 
-         shape="Pozycja",
-         title = "Zbiórki vs. asysty",
-         subtitle = sprintf("Wykres rozrzutu z naniesionymi liniami trendu")) + 
-  theme(text = element_text(size=40))
-@
 
 \section{Podsumowanie}\label{summary}
 
