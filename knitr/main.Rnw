@@ -81,27 +81,6 @@ df$HEIGHT <- df$HEIGHT * 2.5 / 100  # Inch to m
 df2 <- df[complete.cases(df), ]
 @
 
-
-\maketitle
-
-\section{Wprowadzenie}
-
-Odkąd profesjonalne organizacje sportowe zaczęły zatrudniać na pełen etat analityków i statystyków, charakter całych dyscyplin uległ pewnego rodzaju rewolucji. Specjaliści od danych z miejsca stali się bezpośrednimi doradcami kadry trenerskiej, a wyniki ich prac wprowadziły nowe trendy w sposobach treningu i samej gry. Dzisiaj system szkolenia oparty jedynie na solidnym przygotowaniu fizycznym ustępuje miejsca podejściu strategicznemu, mającemu w arsenale analizy wideo, pomiary wydolnościowe czy taktyki wyliczone pod konkretnych rywali. Jako kolebkę wdrażania zaawansowanej statystyki do sportu powszechnie uznaje się najsilniejszą ligę koszykarską na świecie --- NBA (\emph{National Basketball Association}). Dopiero amerykańscy pionierzy zainspirowali nowym sposobem myślenia działaczy z innych dyscyplin, takich jak piłka nożna czy siatkówka.
-
-\section{Cel pracy}
-
-Mimo że wewnętrzne statystyki klubów NBA są ściśle chronione, istnieją również powszechne bazy danych gromadzące szereg informacji na temat konkretnych zawodników. W niniejszej pracy wykorzystamy jeden z takich zbiorów i na jego podstawie wysuniemy garść wniosków m.in na temat panujących trendów w lidze, czy zależności pomiędzy poszczególnymi wynikami i parametrami fizycznymi graczy. Głównym celem analizy będzie uzyskanie charakterystyki najskuteczniejszych zawodników, czyli innymi słowy, odpowiedzenie na pytanie co łączy ze sobą najlepszych graczy. Przy okazji wyróżnimy zawodników o profilach unikalnych --- grających inaczej niż większość teoretycznie podobnych do nich koszykarzy.
-
-\section{Opis danych}
-
-Do analizy wykorzystamy tabelę ,,Player\_Attributes'' z bazy danych ,,Basketball dataset (version 211)'' udostępnionej przez Wyatta Walsha na platformie Kaggle \hyperref[sec:sources]{[1]} (na licencji CC BY-SA 4.0 \hyperref[sec:sources]{[2]}). Zaznaczmy, że na moment pobrania danych, ich ostatnia aktualizacja odbyła się 15 stycznia 2021 roku. W tabeli znajdziemy aż 37 zmiennych określonych dla 4500 zawodników (zarówno aktywnych, jak i tych na sportowej emeryturze). Na potrzeby tej analizy wykorzystamy jedynie 9 interesujących nas cech: imię i nazwisko zawodnika, wzrost, narodowość, nazwę klubu, średnią liczbę punktów/asyst/zbiórek na mecz, nominalną pozycję oraz liczbę pełnych sezonów rozegranych w lidze.
-
-\subsection{Przygotowanie zmiennych ilościowych}
-Część danych zawiera braki --- nie każdy zawodnik ma przypisany wzrost, czy wszystkie statystyki meczowe. W tabeli \ref{tab:stat1} umieściliśmy krótkie podsumowanie dla zmiennych ilościowych. Widzimy, że braków danych jest stosunkowo niewiele jak na 4500 rekordów. Dla zbiórek\footnote{Na przestrzeni całej pracy będziemy posługiwać się wygodnym skrótem myślowym --- pisząć ,,zbiórki'', ,,asysty'' lub ,,punkty'' zawodnika, mamy oczywiście na myśli ich średnią liczbę w przeliczeniu na jeden mecz.} mamy znacząco więcej braków niż dla pozostałych statystyk meczowych. Być może wpływ ma na to fakt, że zbiórki w meczach zostały oficjalnie zliczane dopiero od 1950 roku, w piątym sezonie ligi NBA. 
-
-Warto zaznaczyć, że wzrost domyślnie zapisany był w calach, jednak mając na uwadze czytelność pracy, konwertujemy wszystkie wartości na metry (korzystamy z przelicznika: 1 cal = 2,54 cm).
-
-
 <<echo=F>>=
 minHEIGHT <- min(df$HEIGHT, na.rm = TRUE)
 maxHEIGHT <- max(df$HEIGHT, na.rm = TRUE)
@@ -133,6 +112,26 @@ avgSEASONS <- mean(df$SEASON_EXP, na.rm = TRUE)
 medSEASONS <- median(df$SEASON_EXP, na.rm = TRUE)
 nasSEASONS <- sum(is.na(df$SEASON_EXP))
 @
+
+\maketitle
+
+\section{Wprowadzenie}
+
+Odkąd profesjonalne organizacje sportowe zaczęły zatrudniać na pełen etat analityków i statystyków, charakter całych dyscyplin uległ pewnego rodzaju rewolucji. Specjaliści od danych z miejsca stali się bezpośrednimi doradcami kadry trenerskiej, a wyniki ich prac wprowadziły nowe trendy w sposobach treningu i samej gry. Dzisiaj system szkolenia oparty jedynie na solidnym przygotowaniu fizycznym ustępuje miejsca podejściu strategicznemu, mającemu w arsenale analizy wideo, pomiary wydolnościowe czy taktyki wyliczone pod konkretnych rywali. Jako kolebkę wdrażania zaawansowanej statystyki do sportu powszechnie uznaje się najsilniejszą ligę koszykarską na świecie --- NBA (\emph{National Basketball Association}). Dopiero amerykańscy pionierzy zainspirowali nowym sposobem myślenia działaczy z innych dyscyplin, takich jak piłka nożna czy siatkówka.
+
+\section{Cel pracy}
+
+Mimo że wewnętrzne statystyki klubów NBA są ściśle chronione, istnieją również powszechne bazy danych gromadzące szereg informacji na temat konkretnych zawodników. W niniejszej pracy wykorzystamy jeden z takich zbiorów i na jego podstawie wysuniemy garść wniosków m.in na temat panujących trendów w lidze, czy zależności pomiędzy poszczególnymi wynikami i parametrami fizycznymi graczy. Głównym celem analizy będzie uzyskanie charakterystyki najskuteczniejszych zawodników, czyli innymi słowy, odpowiedzenie na pytanie co łączy ze sobą najlepszych graczy. Przy okazji wyróżnimy zawodników o profilach unikalnych --- grających inaczej niż większość teoretycznie podobnych do nich koszykarzy.
+
+\section{Opis danych}
+
+Do analizy wykorzystamy tabelę ,,Player\_Attributes'' z bazy danych ,,Basketball dataset (version 211)'' udostępnionej przez Wyatta Walsha na platformie Kaggle \hyperref[sec:sources]{[1]} (na licencji CC BY-SA 4.0 \hyperref[sec:sources]{[2]}). Zaznaczmy, że na moment pobrania danych, ich ostatnia aktualizacja odbyła się 15 stycznia 2021 roku. W tabeli znajdziemy aż 37 zmiennych określonych dla 4500 zawodników (zarówno aktywnych, jak i tych na sportowej emeryturze). Na potrzeby tej analizy wykorzystamy jedynie 9 interesujących nas cech: imię i nazwisko zawodnika, wzrost, narodowość, nazwę klubu, średnią liczbę punktów/asyst/zbiórek na mecz, nominalną pozycję oraz liczbę pełnych sezonów rozegranych w lidze.
+
+\subsection{Przygotowanie zmiennych ilościowych}
+Część danych zawiera braki --- nie każdy zawodnik ma przypisany wzrost, czy wszystkie statystyki meczowe. W tabeli \ref{tab:stat1} umieściliśmy krótkie podsumowanie dla zmiennych ilościowych. Widzimy, że braków danych jest stosunkowo niewiele jak na 4500 rekordów. Dla zbiórek\footnote{Na przestrzeni całej pracy będziemy posługiwać się wygodnym skrótem myślowym --- pisząć ,,zbiórki'', ,,asysty'' lub ,,punkty'' zawodnika, mamy oczywiście na myśli ich średnią liczbę w przeliczeniu na jeden mecz.} mamy znacząco więcej braków niż dla pozostałych statystyk meczowych. Być może wpływ ma na to fakt, że zbiórki w meczach zostały oficjalnie zliczane dopiero od 1950 roku, w piątym sezonie ligi NBA. 
+
+Warto zaznaczyć, że wzrost domyślnie zapisany był w calach, jednak mając na uwadze czytelność pracy, konwertujemy wszystkie wartości na metry (korzystamy z przelicznika: 1 cal = 2,54 cm).
+
 
 \begin{table}
 \centering
@@ -192,6 +191,63 @@ ggplot(aes(x=HEIGHT, y=values, na.rm=TRUE, color=POSITION, shape=POSITION)) +
 
 Na wykresach z powodu zaokrąglenia do jednego miejsca po przecinku w calach (co przekłąda się na jeszcze mniejszą dokładność w centymetrach) wzrost zdawałby się mieć charakter dyskretny, stąd decyzja na losowe rozrzucenie rozrzucenie go, w celu lepszego odwzorowania wizualnego. Widzimy, że biorąc za punkt odniesienia wzrost, ciężko nam będzie wyznaczyć najskuteczniejszych graczy. Chociaż można podejrzewać, że wzrost ma istotny wpływ na skuteczność w zbiórkach, to z jakichś przyczyn wyżsi gracze zdają się gorzej asystować.
 
+\subsection{Klub i narodowość}
+
+<<echo=F>>=
+existing_teams <- c('Lakers', 'Clippers', 'Kings', 'Rockets', 'Nuggets', 'Thunder',
+                    'Trail Blazers', 'Bucks', 'Warriors', 'Knicks', 'Magic', 'Suns',
+                    'Pistons', 'Pelicans', 'Heat', 'Nets', 'Cavaliers', 'Mavericks',
+                    'Celtics', 'Raptors', '76ers', 'Spurs', 'Wizards', 'Grizzlies',
+                    'Bulls', 'Pacers', 'Jazz', 'Hornets', 'Hawks', 'Timberwolves')
+@
+
+<<echo=F>>=
+
+quartile3 <- function(vec) {quantile(vec, na.rm = TRUE)[4]}
+
+df3 <- df[(df$TEAM == ''), ]
+df3 <- df3[(df3$PTS > medPTS) & (df3$AST > medAST), ]  # special players with no teams assigned
+
+
+df4 <- df[!(df$TEAM == ''), ]
+df4$Status <- ifelse(df4$TEAM %in% existing_teams, "aktywna", "rozwiązana")
+
+df5 <- df4[(df4$PTS > medPTS) & (df4$AST > medAST), ]  # special players with teams assigned
+df5 <- subset(df5, select=c("TEAM", "PTS", "AST", "Status"))
+df5 <- df5[complete.cases(df5), ]
+
+df5$stats <- ifelse((df5$PTS > quartile3(df4$PTS)) & (df5$AST > quartile3(df4$AST)), "powyżej Q3", "pomiędzy Q2 i Q3")
+@
+
+Czy istnieją drużyny w NBA specjalizujące się w zrzeszaniu zawodników o ponadprzeciętnych umiejętnościach? Aby móc odpowiedzieć na to pytanie, należy zdefiniować umowną granicę pomiędzy graczem zwykłym, a wyjątkowym. Przyjmijmy, że gracze wyjątkowi to ci, dla których dwie najważniejsze statystyki meczowe --- punkty i asysty --- są jednocześnie większe niż odpowiadające im mediany wyliczone dla danych z całej ligi (wartości median znajdują się w tabeli \ref{tab:stat1}). Jeśli zawodnik spełnia ten warunek również dla trzecich kwartyli statystyk, to mówimy, że jest unikalny. Nie uwzględniamy zbiórek ze względu na to, że nie znamy ich wartości aż dla 307 zawodników, a pominięcie tak wielu obserwacji wpłynęłoby negatywnie na wyniki.
+Zawodników z brakami danych dla punktów i asyst jest stosunkowo niewielu, dlatego decydujemy się by nie uwzględniać ich w analizie. 
+
+Wykorzystując dostępny zbiór danych, możemy sporządzić wykres liczby wyjątkowych i unikalnych zawodników w historii poszczególnych drużyn NBA. Na rysunku \ref{fig:club_barplot} kolorem niebieskiem wyróżnione zostały zespoły aktywne, a kolorem żółtym zespoły już nieistniejące. Odcień jaśniejszy wskazuje na liczbę graczy wyjątkowych (ale nie unikalnych), a odcień ciemniejszy na liczbę graczy unikalnych.
+
+Widzimy, że Detroit Pistons to klub który zrzesza najwięcej wyjątkowych zawodników, a Los Angeles Lakers wygrywa pod względem koszykarzy unikalnych. Na pierwszy rzut oka zaskakujące może być to, że Thunder, Raptors i Pelicans są tak nisko w rankingu, będąc drużynami aktywnymi. Jednak spoglądając na oficjalne dane NBA dotyczące lat działalności klubów \hyperref[sec:sources]{[3]}), możemy szybko zauważyć, że organizacje te są stosunkowo młode w porównaniu z resztą ligi. Przykładowo, Oklahoma City Thunder została założona w 2008 roku, po rozwiązaniu funkcjonujących od 40 lat Seattle SuperSonics. Na uwagę zasługuje także Philadelphia 76ers --- organizacja ta zrzesza \Sexpr{nrow(subset(df5, df5$TEAM == '76ers' & df5$stats == 'pomiędzy Q2 i Q3'))} koszykarzy wyjątkowych i \Sexpr{nrow(subset(df5, df5$TEAM == '76ers' & df5$stats == 'powyżej Q3'))} unikalnych, co czyni ją jedyną drużyną w czołówce naszego rankingu, w której zawodników bardzo dobrych jest więcej niż po prostu dobrych.
+
+
+Na wykresie \ref{fig:club_barplot} nie uwzględniamy koszykarzy bez przypisanego klubu, dlatego chcemy dodatkowo skomentować ich przypadek. Przypomnijmy, że takich graczy jest aż \Sexpr{length(df$TEAM[df$TEAM == ""])}. Wśród nich \Sexpr{nrow(df3)} jest według naszej definicji wyjątkowych.
+
+
+<<echo=F, message=FALSE, warning=FALSE, fig.width=5, fig.height=7.43, fig.align="center", fig.cap="\\label{fig:club_barplot}Wykres liczby wyjątkowych zawodników w historii klubów NBA. Zawodnicy wyjątkowi to ci, których punkty i asysty są jednocześnie większe od opowiadających im median obliczonych dla danych z całej ligi.">>=
+
+ggplot(df5, aes(x=reorder(TEAM, TEAM, function(x)+length(x))), na.rm = TRUE) +
+  geom_bar(aes(alpha=stats, fill=Status), na.rm = TRUE) +
+  scale_fill_manual("Status drużyny", values=c("#007bff", "#ffa200")) + 
+  scale_alpha_discrete("Punkty i asysty", range=c(.5,1)) +
+  labs(x = "Drużyna",
+       y = "Liczba zawodników",
+       title = "Liczba wyjątkowych zawodników w historii klubu",
+       caption = "Q2 i Q3 — drugi i trzeci kwartyl") +
+  coord_flip() +
+  theme(text = element_text(size=10),
+          legend.position = c(0.72, 0.222),
+          legend.spacing.y = unit(1, "mm"),
+          panel.border = element_rect(colour = "black", fill=NA),
+          legend.background = element_blank(),
+          legend.box.background = element_rect(colour = "black", fill=alpha('white', 0.4)))
+@
 
 \subsection{Wpływ doświadczenia na wyniki meczowe}
 
@@ -238,7 +294,7 @@ ggplot(df2, aes(AST, REB, shape=POSITION, color=POSITION, na.rm=TRUE, label=PLAY
                      nudge_y=1,
                      nudge_x=-0.5,
                      alpha = 0.8, 
-                     show_guide = FALSE,
+                     show.legend = FALSE,
                      size = 9) +
     scale_color_manual(values=MY_PALETTE1[1:3]) +
     scale_shape_manual(values=c(1, 2, 5)) +
@@ -260,6 +316,9 @@ ggplot(df2, aes(AST, REB, shape=POSITION, color=POSITION, na.rm=TRUE, label=PLAY
 	\vspace{0.2cm}
 	
 	[2] \hspace{0.2cm} \href{https://creativecommons.org/licenses/by-sa/4.0/}{\emph{creativecommons.org/licenses/by-sa/4.0/}}
+	
+	\vspace{0.2cm}
+	[3] \hspace{0.2cm} \href{https://www.nba.com/stats/history/}{\emph{https://www.nba.com/stats/history/}}
 	
 
 \end{document}
