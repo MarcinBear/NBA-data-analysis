@@ -4,6 +4,26 @@ library(dplyr)
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path))  # set working dir to current folder
 df <- read.csv("../data/cleaned_nba_dataset.csv")  # the same df as in main.rnw after cleaning
 summary(df)
+
+
+MY_PALETTE1 = c("#ff0000", "#ffa200", "#007bff", "#ff00fb", "#241aa5")
+df2 <- df[!(df$POSITION == ""), ]
+
+ggplot(df2, aes(AST, REB, na.rm=TRUE, label=PLAYER)) +
+  geom_point(size=4, stroke=1.4, alpha=0.4, na.rm=TRUE) +
+  geom_smooth(method = "lm", show.legend = FALSE, na.rm=TRUE) +
+  scale_color_manual(values=MY_PALETTE1[1:3]) +
+  scale_shape_manual(values=c(1, 2, 5)) +
+  guides(color = guide_legend(override.aes = list(size = 10))) +
+  labs(x = "asysty",
+       y = "zbiórki",
+       colour="Pozycja", 
+       shape="Pozycja",
+       title = "Zbiórki vs. asysty",
+       subtitle = sprintf("Wykres rozrzutu z naniesionymi liniami trendu")) + 
+  theme(text = element_text(size=40))
+
+
 MY_PALETTE1 = c("#ff0000", "#ffa200", "#007bff", "#ff00fb", "#241aa5")
 
 existing_teams <- c('Lakers', 'Clippers', 'Kings', 'Rockets', 'Nuggets', 'Thunder',

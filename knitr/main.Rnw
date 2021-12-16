@@ -120,7 +120,7 @@ Odkąd profesjonalne organizacje sportowe zaczęły zatrudniać na pełen etat a
 
 \section{Cel pracy}
 
-Mimo że wewnętrzne statystyki klubów NBA są ściśle chronione, istnieją również powszechne bazy danych gromadzące szereg informacji na temat konkretnych zawodników. W niniejszej pracy wykorzystamy jeden z~takich zbiorów i~na jego podstawie wysuniemy garść wniosków m.in na temat panujących trendów w~lidze, czy zależności pomiędzy poszczególnymi wynikami i~parametrami fizycznymi graczy. Głównym celem analizy będzie uzyskanie charakterystyki najskuteczniejszych zawodników, czyli innymi słowy, odpowiedzenie na pytanie co łączy ze sobą najlepszych graczy. Przy okazji wyróżnimy zawodników o~profilach unikalnych --- grających inaczej niż większość teoretycznie podobnych do nich koszykarzy.
+Mimo że wewnętrzne statystyki klubów NBA są ściśle chronione, istnieją również powszechne bazy danych gromadzące szereg informacji na temat konkretnych zawodników. W niniejszej pracy wykorzystamy jeden z~takich zbiorów i~na jego podstawie wysuniemy garść wniosków m.in na temat panujących trendów w~lidze, czy zależności pomiędzy poszczególnymi wynikami i~parametrami fizycznymi graczy. Głównym celem analizy będzie opracowanie szeregu wskazówek, które mogłyby zostać wykorzystane przez sztab trenerski w celu identyfikacji zawodników potencjalnie wartościowych. Chcemy m.in dowiedzieć się, czy koszykarze wyżsi są przeważnie lepsi, czy ligowe doświadczenie jest cenniejsze niż młodociana ambicja, a~także czy możemy założyć, że gracz uzdolniony w jednej dziedzinie jest także uzdolniony w innej. Przy okazji wyróżnimy kilku koszykarzy wybitnych, których statystyki naszym zdaniem zasługują na uwagę, a także przyjrzymy się klubom, które zrzeszają najwięcej talentów.
 
 \section{Opis danych}
 
@@ -163,7 +163,7 @@ Analizę danych podzielimy na kilka pomniejszych, wybranych przez nas problemów
 
 Koszykówka z~założenia jest sportem faworyzującym wysokich zawodników. Chociaż liga NBA gościła i~niższych graczy, powszechnie wiadomo, że wzrost daje nieocenioną przewagę. Dlatego w~poszukiwaniu najskuteczniejszych zawodników zaczniemy od sprawdzenia wyników na podstawie wzrostu.
 
-<<echo=F, fig.width=21, fig.height=19, fig.align="center", fig.cap="\\label{fig:height}Wykresy rozrzutu dla asyst, punktów i zbiórek, względem wzrostu. Rysunek nie uwzględnia zawodników dla których wzrost lub rozpatrywane statystyki meczowe są nieznane.">>=
+<<echo=F, fig.width=21, fig.height=21, fig.align="center", fig.cap="\\label{fig:height}Wykresy rozrzutu dla asyst, punktów i zbiórek, względem wzrostu. Rysunek nie uwzględnia zawodników dla których wzrost lub rozpatrywane statystyki meczowe są nieznane.">>=
 afig_df <- df[!(df$POSITION == ""), ]
 
 afig_df %>%
@@ -197,7 +197,7 @@ Rysunek \ref{fig:height} przedstawia zależność podstawowych statystyk meczowy
 
 Możemy zauważyć, że w przypadku punktów, wzrost nie ma aż tak wielkiego znaczenia. Jednak przy zbieraniu piłki, nawet kilka centymetrów przewagi może zrobić różnicę w meczu.
 
-Naszym głównym wnioskiem, który wyciągamy z powyższej analizy, jest to, że w realiach NBA ponadprzeciętny wzrost nie gwarantuje lepszych wyników. Wybitnych graczy nie wyłonimy wybierając jedynie tych najwyższych, gdyż z różną budową ciała związane są różne pozycje i role w drużynie. Tak więc złożenie zespołu z samych podkoszowych byłoby prawdopodobnie taktycznym strzałem w kolano.
+Naszym głównym wnioskiem, który wyciągamy z powyższej analizy, jest to, że w realiach NBA ponadprzeciętny wzrost nie gwarantuje lepszych wyników. Wybitnych graczy nie wyłonimy wybierając jedynie tych najwyższych, gdyż z różną budową ciała związane są różne pozycje i role w drużynie. Tak więc złożenie zespołu z samych podkoszowych byłoby zapewne taktycznym strzałem w kolano.
 
 \subsection{Korelacje między statystykami meczowymi}
 
@@ -209,7 +209,7 @@ Załóżmy że umiejętności gracza w lidze NBA mają stałą sumę. Oznaczało
 
 %Naszym zdaniem ciekawym i~godnym zaprezentowania jest przypadek zależności zbiórek od asyst, wykorzystujący jeszcze zmienną kategoryczną wskazującą pozycję. Zawodników w~ilości \Sexpr{length(df$POSITION[df$POSITION == ""])} bez przypisanej pozycji pominiemy na wykresie, ze względu na nieistotny wpływ wizualizacyjny.
 
-<<echo=F, fig.width=28, fig.height=22, fig.align="center", fig.cap="\\label{fig:corr_matrix}Macierz korelacji zmiennych ilościowych. ">>=
+<<echo=F, fig.width=28, fig.height=16, fig.align="center", fig.cap="\\label{fig:corr_matrix}Macierz korelacji zmiennych ilościowych. ">>=
 
 
 data.frame("l. sezonów"=df$SEASON_EXP, 
@@ -266,7 +266,7 @@ center_cor  <- cor(df7[df7$POSITION == 'Center', ]$AST, df7[df7$POSITION == 'Cen
 @
 
 
-Spośród rozpatrywanych korelacji, chcemy zwrócić uwagę na pewien, na pozór mało interesujący przykład. Asysty i zbiórki nie wykazują względem siebie silnej korelacji, jednak jeśli graczy podzielimy na pozycje, sytuacja ta ulegnie zmianie. Na wykresie \ref{fig:triple_regre} dobieramy trzy różne proste regresji, każdą dla innej pozycji na parkiecie. Widzimy, że pozycja ma istotny wpły na siłę korelacji. Dla \emph{Guard} współczynnik korelacji wynosi \Sexpr{guard_cor}, dla \emph{Forward} \Sexpr{forward_cor}, a dla \emph{Center} aż \Sexpr{center_cor}.  Na wykresie \ref{fig:triple_regre} dodatkowo wyróżniliśmy graczy, których iloczyn asyst i zbiórek jest większy niż 85. Warto zwrócić uwagę na dwóch geniuszy zbiórek --- Wilta Chamberlaina i~Billa Russela. Ich wyniki są ponad dwa razy wyższe od zdecydowanej większości pozostałych zawodników.
+Spośród rozpatrywanych korelacji, chcemy zwrócić uwagę na pewien, na pozór mało interesujący przykład. Asysty i zbiórki nie wykazują względem siebie silnej korelacji, jednak jeśli graczy podzielimy na pozycje, sytuacja ta ulegnie zmianie. Na wykresie \ref{fig:triple_regre} dobieramy trzy różne proste regresji, każdą dla innej pozycji na parkiecie. Widzimy, że pozycja ma istotny wpły na siłę korelacji. Dla \emph{Guard} współczynnik korelacji wynosi \Sexpr{guard_cor}, dla \emph{Forward} \Sexpr{forward_cor}, a dla \emph{Center} aż \Sexpr{center_cor}.  Na wykresie \ref{fig:triple_regre} dodatkowo wyróżniliśmy graczy, których iloczyn asyst i zbiórek jest większy niż 85. Warto zwrócić uwagę na dwóch geniuszy zbiórek --- Wilta Chamberlaina i~Billa Russela. Ich wyniki są ponad dwa razy wyższe od zdecydowanej większości pozostałych zawodników. Podziw budzą również osiągi grającego w Denver Nuggets Nikoli Jokicia. Jako podkoszowy rozdaje on aż \Sexpr{df[df$PLAYER == 'Nikola Jokic', ]$AST} asyst na mecz, zostawiając przy tym innych centrów daleko w tyle. 
 
 %Wartym uwagi jest wyraźne rozgraniczenie pomiędzy pozycjami oraz każdorazowe występowanie zależności liniowej o~dodatnim współczynniku kierunkowym. Sugeruje to, że dla graczy, zbiórki i~asysty nie wydają się być grą o sumie zerowej. Rozwijając się zawodnicy w NBA średnio stają się lepsi w~obu elementach gry na raz. Jednak każda pozycja wykazuje inną zależność liniową.Na szczególną uwagę zasługują tutaj dwaj zawodnicy z pozycji center, Wilt Chamberlain i~Bill Russell. Libczbą zdobytych zbiórek przewyższają ponad dwukrotnie zdecydowaną większość graczy ze wszystkich pozycji.
 
@@ -365,8 +365,16 @@ ggplot(df5, aes(x=reorder(TEAM, TEAM, function(x)+length(x))), na.rm = TRUE) +
 @
 
 \section{Podsumowanie}\label{summary}
-Zbierzmy zatem wnioski z analiz. W pierwszej podsekcji pokazaliśmy, że mimo intuicji sugerującej, że wzrost może mieć bezpośredni wpływ na całkoształt osiągów gracza, w lidze NBA takie zjawisko zdaje się nie występować. Dalej okazuje się, że jedyną zmienną wykazującą zdecydowany brak korelacji jest wzrost i zdobyte punkty, a wszystkie inne zmienne ilościowe oprócz wzrostu i asyst są mniej lub bardziej dodatnio skorelowane. Obserwacja ta sugeruje, że gracze lepsi w konkretnych elementach gry są też przeciętnie lepsi w pozostałych.
 
+Z przeprowadzonej analizy danych uzyskaliśmy szereg interesujących wniosków. Mimo intuicji sugerującej, że wzrost może mieć bezpośredni wpływ na całkoształt osiągów gracza, w lidze NBA takie zjawisko zdaje się nie występować. Oczywiście domyślamy się, że w większości przypadków ponadprzęciętna budowa ciała zawodnika stanowiła pierwszą furtkę do kariery na profesjonalnym poziomie, jednak wewnątrz tej niezwykle hermetycznej ligi, najwyżsi wcale nie są najlepsi. Okazuje się, że wśród rozpatrywanych przez nas zmiennych, jedynymi wykazującymi zdecydowany brak korelacji liniowej są wzrost i zdobyte punkty. Zatem szukanie strzelców jedynie wśród graczy o konkretnym wzroście, nie jest szczególnie zasadne.
+
+Okazuje się, że gracze efektywni w konkretnej dziedzinie są także często efektywni w innej. Pokazaliśmy, że dwie, pozornie niepowiązane ze sobą statystyki --- asysty i zbiórki, są ze sobą skorelowane, w szczególności gdy rozpatrujemy zawodników w obrębie konkretnych pozycji. Warto więc stawiać na graczy dobrze punktujących, asystujących bądź zbierających, gdyż możemy spodziewać się, że nie zawiodą nas w pozostałych obszarach gry.
+
+Analizując koszykarzy pod względem doświadczenia, możemy dojść do wniosku, że ci, którzy w lidze rozegrali więcej pełnych sezonów, rzucają średnio więcej punktów. Gwarantują też oni większą stabilność gry, jednak jeśli poszukujemy do składu strzelca z najwyższej półki, nie powinniśmy szukać wśród ligowych weteranów. 
+
+Na potrzeby naszych rozważań wprowadziliśmy definicję zawodnika wyjątkowego oraz unikalnego. Drużyną, z którą kojarzonych jest najwięcej wyjątkowych zawodników jest Detroit Pistons. Pod względem zawodników unikalnych wygrywa jednak Los Angeles Lakers. Być może to właśnie w tych organizacjach praca trenera wiązałaby się z obcowaniem z najbardziej utalentowanymi koszykarzami. 
+
+Sporządzona analiza stanowi zbiór przydatnych obserwacji i wniosków dotyczących ligi NBA. Korzystając z dostępnych nam danych odpowiedzieliśmy na postawione wcześniej pytania i uzyskaliśmy szereg interesujących wyników.
 
 	\section*{Źródła}\label{sec:sources} % bibtex nie działał nam dobrze z knitrem, dlatego bibliografię robimy na około
 \indent	
