@@ -201,7 +201,13 @@ Naszym głównym wnioskiem, który wyciągamy z powyższej analizy, jest to, że
 
 \subsection{Korelacje między statystykami meczowymi}
 
-W poszukiwaniu cech wyróżniających najlepszych graczy sensownie będzie rozważyć zależności między zmiennymi ilościowymi. Mając dostęp do statystyk takich jak zdobyte punkty, które są bezpośrednim wyznacznikiem umiejętności gracza, możemy sprawdzić czy wraz z nimi występują inne cechy. Naszym zdaniem ciekawym i~godnym zaprezentowania jest przypadek zależności zbiórek od asyst, wykorzystujący jeszcze zmienną kategoryczną wskazującą pozycję. Zawodników w~ilości \Sexpr{length(df$POSITION[df$POSITION == ""])} bez przypisanej pozycji pominiemy na wykresie, ze względu na nieistotny wpływ wizualizacyjny.
+W poszukiwaniu cech wyróżniających najlepszych graczy sensownie będzie rozważyć zależności między zmiennymi ilościowymi. Mając dostęp do statystyk takich jak zdobyte punkty, które są bezpośrednim wyznacznikiem umiejętności gracza, możemy sprawdzić czy wraz z~nimi występują inne cechy. Zaczniemy tutaj od rzutu okiem na macierz korelacji, która ukaże nam wszystkie zależności liniowe. 
+
+Rzeczą która od razu rzuca się w oczy i~może zdawać się dość szokująca, jest praktycznie zerowy współczynnik korelacji pomiędzy wzrostem oraz zdobytymi punktami. Wykres rozrzutu \ref{fig:height}, wizualizuje dokładnie to zjawisko. Widzimy tam też zaskakujący ujemny współczynnik dla korelacji wzrostu i~asyst. Najsilniejsze zależności liniowe występują zaś właśnie pomiędzy punktami i~pozostałymi statystykami. 
+
+Załóżmy że umiejętności gracza w lidze NBA mają stałą sumę. Oznaczałoby to, że inwestując w swoje wyniki w zbiórkach musimy oddać trochę z~np. zdobytych punktów. Intuicyjnie wydaje się to mieć sens, jednak macierz korelacji pokazuje nam coś zupełnie odwrotnego. Każdorazowo między osiągami graczy występuje dodatni współczynnik korelacji. Mówi nam to o~tym, że jeśli grasz w NBA, stając się lepszym w jednym aspekcie gry, średnio stajesz się lepszy też w pozostałych.
+
+%Naszym zdaniem ciekawym i~godnym zaprezentowania jest przypadek zależności zbiórek od asyst, wykorzystujący jeszcze zmienną kategoryczną wskazującą pozycję. Zawodników w~ilości \Sexpr{length(df$POSITION[df$POSITION == ""])} bez przypisanej pozycji pominiemy na wykresie, ze względu na nieistotny wpływ wizualizacyjny.
 
 <<echo=F, fig.width=28, fig.height=18, fig.align="center", fig.cap="Macierz korelacji zmiennych ilościowych. ">>=
 
@@ -251,10 +257,10 @@ ggplot(df2, aes(AST, REB, shape=POSITION, color=POSITION, na.rm=TRUE, label=PLAY
   theme(text = element_text(size=40))
 @
 
+Następny zaprezentowany przez nas wykres prezentuje ciekawe zjawisko. Jest nim rozbicie graczy pozycjami w zależności zbiórek od asyst oraz inna liniowa zależność dla każdej pozycji. Sam wykres swoim kształtem budzi skojarzenia z~kometą Goldbacha. Warunkiem na oznaczenie gracza imieniem i~nazwiskiem jest iloczyn asyst i zbiórek większy od 85. Niezwykle wyróżniają się tutaj dwoje geniuszy zbiórek Wilt Chamberlain i~Bill Russel. Ich wyniki są ponad dwa razy wyższe od zdecydowanej większości pozostałych zawodników.
 
-Wartym uwagi jest wyraźne rozgraniczenie pomiędzy pozycjami oraz każdorazowe występowanie zależności liniowej o~dodatnim współczynniku kierunkowym. Sugeruje to, że dla graczy, zbiórki i~asysty nie wydają się być grą o sumie zerowej. Rozwijając się zawodnicy w NBA średnio stają się lepsi w~obu elementach gry na raz. Jednak każda pozycja wykazuje inną zależność liniową.Na szczególną uwagę zasługują tutaj dwaj zawodnicy z pozycji center, Wilt Chamberlain i~Bill Russell. Libczbą zdobytych zbiórek przewyższają ponad dwukrotnie zdecydowaną większość graczy ze wszystkich pozycji.
+%Wartym uwagi jest wyraźne rozgraniczenie pomiędzy pozycjami oraz każdorazowe występowanie zależności liniowej o~dodatnim współczynniku kierunkowym. Sugeruje to, że dla graczy, zbiórki i~asysty nie wydają się być grą o sumie zerowej. Rozwijając się zawodnicy w NBA średnio stają się lepsi w~obu elementach gry na raz. Jednak każda pozycja wykazuje inną zależność liniową.Na szczególną uwagę zasługują tutaj dwaj zawodnicy z pozycji center, Wilt Chamberlain i~Bill Russell. Libczbą zdobytych zbiórek przewyższają ponad dwukrotnie zdecydowaną większość graczy ze wszystkich pozycji.
 
-Kolejnym krokiem naszej analizy jest przyjrzenie się macierzy korelacji wykonanej dla wszystkich zmiennych ilościowych. Używamy tutaj współczynnika korelacji Pearsona. Rzeczą która od razu rzuca się w oczy i~może zdawać się dość szokująca jest praktycznie zerowy współczynnik korelacji pomiędzy wzrostem oraz zdobytymi punktami. Wykres rozrzutu \ref{fig:height}, wizualizuje dokładnie to zjawisko. Widzimy tam też zaskakujący ujemny współczynnik dla asyst. Najsilniejsze zależności liniowe występują zaś właśnie pomiędzy punktami i~pozostałymi statystykami.
 
 \subsection{Drużyna a wyjątkowość zawodników}
 
