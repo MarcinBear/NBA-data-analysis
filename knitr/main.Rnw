@@ -159,7 +159,7 @@ Dodajmy jeszcze, że nie ma zawodników bez wpisanego imienia i~nazwiska.
 
 Analizę danych podzielimy na kilka pomniejszych, wybranych przez nas problemów, dla których wnioski będziemy formułować na bieżąco. Ogół wyników i przemyśleń zbierzemy w sekcji \ref{summary}, gdzie postaramy się także odpowiedzieć na postawione wcześniej pytania badawcze. 
 
-\subsection{Czy w NBA wyższy znaczy lepszy?}
+\subsection{Czy w NBA wyższy znaczy lepszy?}\label{sec:height}
 
 Koszykówka z~założenia jest sportem faworyzującym wysokich zawodników. Chociaż liga NBA gościła i~niższych graczy, powszechnie wiadomo, że wzrost daje nieocenioną przewagę. Dlatego w~poszukiwaniu najskuteczniejszych zawodników zaczniemy od sprawdzenia wyników na podstawie wzrostu.
 
@@ -201,15 +201,15 @@ Naszym głównym wnioskiem, który wyciągamy z powyższej analizy, jest to, że
 
 \subsection{Korelacje między statystykami meczowymi}
 
-W poszukiwaniu cech wyróżniających najlepszych graczy sensownie będzie rozważyć zależności między zmiennymi ilościowymi. Mając dostęp do statystyk takich jak zdobyte punkty, które są bezpośrednim wyznacznikiem umiejętności gracza, możemy sprawdzić czy wraz z~nimi występują inne cechy. Zaczniemy tutaj od rzutu okiem na macierz korelacji, która ukaże nam wszystkie zależności liniowe. 
+W poszukiwaniu cech wyróżniających najlepszych graczy sensownie będzie rozważyć zależności między zmiennymi ilościowymi. Mając dostęp do statystyk takich jak zdobyte punkty, które są bezpośrednim wyznacznikiem umiejętności gracza, możemy sprawdzić czy wraz z~nimi występują inne cechy. Rysunek \ref{fig:corr_matrix} przedstawia macierz korelacji rozpatrywanych zmiennych ilościowych, sporządzoną przy użyciu współczynnika korelacji Pearsona. 
 
-Rzeczą która od razu rzuca się w oczy i~może zdawać się dość szokująca, jest praktycznie zerowy współczynnik korelacji pomiędzy wzrostem oraz zdobytymi punktami. Wykres rozrzutu \ref{fig:height}, wizualizuje dokładnie to zjawisko. Widzimy tam też zaskakujący ujemny współczynnik dla korelacji wzrostu i~asyst. Najsilniejsze zależności liniowe występują zaś właśnie pomiędzy punktami i~pozostałymi statystykami. 
+Rzeczą która od razu rzuca się w oczy jest praktycznie zerowy współczynnik korelacji pomiędzy wzrostem oraz zdobytymi punktami. Potwierdza to nasze obserwacje z sekcji \ref{sec:height}, w której wykres rozrzutu \ref{fig:height} dokładnie przedstawia to zjawisko. Współczynnik korelacji wzrostu i~asyst jest ujemny, co również jest zgodne z poprzednią analizą. Najsilniejsze zależności liniowe występują zaś pomiędzy punktami i~pozostałymi statystykami meczowymi.
 
-Załóżmy że umiejętności gracza w lidze NBA mają stałą sumę. Oznaczałoby to, że inwestując w swoje wyniki w zbiórkach musimy oddać trochę z~np. zdobytych punktów. Intuicyjnie wydaje się to mieć sens, jednak macierz korelacji pokazuje nam coś zupełnie odwrotnego. Każdorazowo między osiągami graczy występuje dodatni współczynnik korelacji. Mówi nam to o~tym, że jeśli grasz w NBA, stając się lepszym w jednym aspekcie gry, średnio stajesz się lepszy też w pozostałych.
+Załóżmy że umiejętności gracza w lidze NBA mają stałą sumę. Oznaczałoby to, że inwestując w swoje wyniki w zbiórkach musimy przykładowo zrezygnować nieco ze zdobywania punktów. Choć intuicyjnie mogłoby to mieć sens, macierz korelacji pokazuje nam coś zupełnie odwrotnego. Każdorazowo między osiągami graczy występuje dodatni współczynnik korelacji. Mówi nam to o~tym, że koszykarz w NBA, będąc efektywny w jednym aspekcie gry, prawdopodobnie jest też efektywny w pozostałych.
 
 %Naszym zdaniem ciekawym i~godnym zaprezentowania jest przypadek zależności zbiórek od asyst, wykorzystujący jeszcze zmienną kategoryczną wskazującą pozycję. Zawodników w~ilości \Sexpr{length(df$POSITION[df$POSITION == ""])} bez przypisanej pozycji pominiemy na wykresie, ze względu na nieistotny wpływ wizualizacyjny.
 
-<<echo=F, fig.width=28, fig.height=18, fig.align="center", fig.cap="Macierz korelacji zmiennych ilościowych. ">>=
+<<echo=F, fig.width=28, fig.height=22, fig.align="center", fig.cap="\\label{fig:corr_matrix}Macierz korelacji zmiennych ilościowych. ">>=
 
 
 data.frame("l. sezonów"=df$SEASON_EXP, 
@@ -257,9 +257,52 @@ ggplot(df2, aes(AST, REB, shape=POSITION, color=POSITION, na.rm=TRUE, label=PLAY
   theme(text = element_text(size=40))
 @
 
-Następny zaprezentowany przez nas wykres prezentuje ciekawe zjawisko. Jest nim rozbicie graczy pozycjami w zależności zbiórek od asyst oraz inna liniowa zależność dla każdej pozycji. Sam wykres swoim kształtem budzi skojarzenia z~kometą Goldbacha. Warunkiem na oznaczenie gracza imieniem i~nazwiskiem jest iloczyn asyst i zbiórek większy od 85. Niezwykle wyróżniają się tutaj dwoje geniuszy zbiórek Wilt Chamberlain i~Bill Russel. Ich wyniki są ponad dwa razy wyższe od zdecydowanej większości pozostałych zawodników.
+<<echo=F>>=
+df7 <- df[, c("POSITION", "AST", "REB")]
+df7 <- df7[complete.cases(df7), ]
+guard_cor   <- cor(df7[df7$POSITION == 'Guard', ]$AST, df7[df7$POSITION == 'Guard', ]$REB)
+forward_cor <- cor(df7[df7$POSITION == 'Forward', ]$AST, df7[df7$POSITION == 'Forward', ]$REB)
+center_cor  <- cor(df7[df7$POSITION == 'Center', ]$AST, df7[df7$POSITION == 'Center', ]$REB)
+@
+
+
+Spośród rozpatrywanych korelacji, chcemy zwrócić uwagę na pewien, na pozór mało interesujący przykład. Asysty i zbiórki nie wykazują względem siebie silnej korelacji, jednak jeśli graczy podzielimy na pozycje, sytuacja ta ulegnie zmianie. Na wykresie \ref{fig:triple_regre} dobieramy trzy różne proste regresji, każdą dla innej pozycji na parkiecie. Widzimy, że pozycja ma istotny wpły na siłę korelacji. Dla \emph{Guard} współczynnik korelacji wynosi \Sexpr{guard_cor}, dla \emph{Forward} \Sexpr{forward_cor}, a dla \emph{Center} aż \Sexpr{center_cor}.  Na wykresie \ref{fig:triple_regre} dodatkowo wyróżniliśmy graczy, których iloczyn asyst i zbiórek jest większy niż 85. Warto zwrócić uwagę na dwóch geniuszy zbiórek --- Wilta Chamberlaina i~Billa Russela. Ich wyniki są ponad dwa razy wyższe od zdecydowanej większości pozostałych zawodników.
 
 %Wartym uwagi jest wyraźne rozgraniczenie pomiędzy pozycjami oraz każdorazowe występowanie zależności liniowej o~dodatnim współczynniku kierunkowym. Sugeruje to, że dla graczy, zbiórki i~asysty nie wydają się być grą o sumie zerowej. Rozwijając się zawodnicy w NBA średnio stają się lepsi w~obu elementach gry na raz. Jednak każda pozycja wykazuje inną zależność liniową.Na szczególną uwagę zasługują tutaj dwaj zawodnicy z pozycji center, Wilt Chamberlain i~Bill Russell. Libczbą zdobytych zbiórek przewyższają ponad dwukrotnie zdecydowaną większość graczy ze wszystkich pozycji.
+
+
+\subsection{Wpływ doświadczenia na wyniki meczowe}
+
+Czy przeciętny ligowy weteran to lepszy wybór dla trenera niż przeciętny \emph{rookie}\footnote{\emph{rookie} (ang.) --- debiutant, nowicjusz, żółtodziób. W koszykarskim żargonie jest to powszechnie stosowane określenie na niedoświadczonych zawodników.}? A~może to ambitna młodzież rządzi na parkiecie? Odpowiedź na te pytania nie jest jednoznaczna. Jednak na podstawie rozpatrywanych danych możemy wyciągnąć szereg ciekawych wniosków. Na rysunku \ref{fig:exp_boxplots} widzimy łańcuch wykresów pudełkowych średniej liczby punktów na mecz, skonstruowanych dla zawodników o konkretnym doświadczeniu w~lidze. Od razu możemy zauważyć, że wraz z~doświadczeniem, średnia liczba punktów na mecz zawodnika w większości przypadków rośnie. Jest to zaskakująco wyraźny trend --- przeciętnie, doświadczeni gracze zdobywają znacznie więcej punktów. Jednak zawodnikiem punktującym najlepiej wcale nie jest weteran. Mający 8~lat doświadczenia w~lidze Bradley Beal rzuca średnio 31.8 punktów na mecz. Wyniki pojedynczych drużyn w meczach NBA oscylują często wokół liczby 90, zatem można powiedzieć, że Bradley odpowiada zwykle za jedną trzecią zdobyczy punktowej swojego zespołu. Na drugim miejscu, z~wynikiem 30.1 punktów, uplasowali się ex aequo Michael Jordan (14 sezonów w~NBA), Wilt Chamberlain (13 sezonów w~NBA) oraz Damian Lillard (8 sezonów w~NBA). 
+
+Analizując dalej rysunek \ref{fig:exp_boxplots}, możemy zauważyć, że wraz ze wzorstem doświadczenia, w większości przypadków zwiększa się rozstęp międzykwartylowy próbki. Jednocześnie przy tym maleje liczba obserwacji nietypowych. Dla zawodników, którzy w NBA rozegrali 0, 1, 2, 3, 4 i 5 pełnych sezonów mamy odpowiednio \Sexpr{outliers(df[df$SEASON_EXP == 0, ]$PTS)[1]}, \Sexpr{outliers(df[df$SEASON_EXP == 1, ]$PTS)[1]}, \Sexpr{outliers(df[df$SEASON_EXP == 2, ]$PTS)[1]}, \Sexpr{outliers(df[df$SEASON_EXP == 3, ]$PTS)[1]}, \Sexpr{outliers(df[df$SEASON_EXP == 4, ]$PTS)[1]} i \Sexpr{outliers(df[df$SEASON_EXP == 5, ]$PTS)[1]} obserwacji nietypowych. Warto także zaznaczyć, że w żadnym przypadku nie otrzymujemy obserwacji nietypowo małych --- nieszablonowi zawodnicy to wyłącznie ci którzy zaskakują w pozytywnym sensie.
+
+Dodajmy, że tylko dwóch koszykarzy rozegrało dokładnie 20 pełnych sezonów w~lidze (Jamal Crawford i Robert Parish) i~tylko jeden rozegrał dokładnie 22 pełne sezony (Vince Carter).
+
+Dla średniej asyst i~zbiórek również obserwujemy tendencję wzrostową przy rosnącym doświadczeniu, jednak efekt ten nie jest aż tak wyraźny jak w~przypadku punktów. Rozstępy międzykwartylowe także się zwiększają, a~liczba obserwacji nietypowych stopniowo maleje.
+
+Na podstawie powyższych analiz, możemy stwierdzić, że opcją ,,bezpieczniejszą'' dla trenera jest zakontraktowanie zawodnika grającego dłużej w lidze. Oczywiście mówimy tu o~czysto teoretycznej sytuacji, w~której trener musiałby podjąć decyzję dysponując jedynie informacją o~doświadczeniu ligowym kandydatów do składu.
+
+
+<<echo=F, fig.width=19, fig.height=11, fig.align="center", fig.cap="\\label{fig:exp_boxplots}Wykresy pudełkowe śrendiej liczby punktów na mecz dla zawodników o konkretnym doświadczeniu w lidze.">>=
+
+ggplot(data=df, aes(x=SEASON_EXP, y=PTS, group=SEASON_EXP, fill=SEASON_EXP)) +
+  geom_boxplot(color="#703100", alpha=0.5, lwd=1.5, na.rm = TRUE) +
+  stat_summary(fun = mean, geom='point', shape=18, color="#ff7300", size=6, na.rm = TRUE, show.legend = TRUE) +
+  scale_fill_gradient(low = "#fcba03", high = "#fc3003", aesthetics = "fill") +
+  scale_shape_manual("", values=c("średnia"="x")) +
+  guides(fill="none") +
+  labs(x = "liczba pełnych sezonów lidze",
+       y = "punkty / mecz",
+       title = "Liczba punktów vs. doświadczenie w lidze") +
+  theme(text = element_text(size=35),
+        legend.position = c(0.9, 0.15),
+        legend.title = element_blank(),
+        legend.spacing.y = unit(0, "mm"),
+        panel.border = element_rect(colour = "black", fill=NA),
+        legend.background = element_blank(),
+        legend.box.background = element_rect(colour = "black"))
+@
 
 
 \subsection{Drużyna a wyjątkowość zawodników}
@@ -321,39 +364,6 @@ ggplot(df5, aes(x=reorder(TEAM, TEAM, function(x)+length(x))), na.rm = TRUE) +
           legend.box.background = element_rect(colour = "black", fill=alpha('white', 0.4)))
 @
 
-\subsection{Wpływ doświadczenia na wyniki meczowe}
-
-Czy przeciętny ligowy weteran to lepszy wybór dla trenera niż przeciętny \emph{rookie}\footnote{\emph{rookie} (ang.) --- debiutant, nowicjusz, żółtodziób. W koszykarskim żargonie jest to powszechnie stosowane określenie na niedoświadczonych zawodników.}? A~może to ambitna młodzież rządzi na parkiecie? Odpowiedź na te pytania nie jest jednoznaczna. Jednak na podstawie rozpatrywanych danych możemy wyciągnąć szereg ciekawych wniosków. Na rysunku \ref{fig:exp_boxplots} widzimy łańcuch wykresów pudełkowych średniej liczby punktów na mecz, skonstruowanych dla zawodników o konkretnym doświadczeniu w~lidze. Od razu możemy zauważyć, że wraz z~doświadczeniem, średnia liczba punktów na mecz zawodnika w większości przypadków rośnie. Jest to zaskakująco wyraźny trend --- przeciętnie, doświadczeni gracze zdobywają znacznie więcej punktów. Jednak zawodnikiem punktującym najlepiej wcale nie jest weteran. Mający 8~lat doświadczenia w~lidze Bradley Beal rzuca średnio 31.8 punktów na mecz. Wyniki pojedynczych drużyn w meczach NBA oscylują często wokół liczby 90, zatem można powiedzieć, że Bradley odpowiada zwykle za jedną trzecią zdobyczy punktowej swojego zespołu. Na drugim miejscu, z~wynikiem 30.1 punktów, uplasowali się ex aequo Michael Jordan (14 sezonów w~NBA), Wilt Chamberlain (13 sezonów w~NBA) oraz Damian Lillard (8 sezonów w~NBA). 
-
-Analizując dalej rysunek \ref{fig:exp_boxplots}, możemy zauważyć, że wraz ze wzorstem doświadczenia, w większości przypadków zwiększa się rozstęp międzykwartylowy próbki. Jednocześnie przy tym maleje liczba obserwacji nietypowych. Dla zawodników, którzy w NBA rozegrali 0, 1, 2, 3, 4 i 5 pełnych sezonów mamy odpowiednio \Sexpr{outliers(df[df$SEASON_EXP == 0, ]$PTS)[1]}, \Sexpr{outliers(df[df$SEASON_EXP == 1, ]$PTS)[1]}, \Sexpr{outliers(df[df$SEASON_EXP == 2, ]$PTS)[1]}, \Sexpr{outliers(df[df$SEASON_EXP == 3, ]$PTS)[1]}, \Sexpr{outliers(df[df$SEASON_EXP == 4, ]$PTS)[1]} i \Sexpr{outliers(df[df$SEASON_EXP == 5, ]$PTS)[1]} obserwacji nietypowych. Warto także zaznaczyć, że w żadnym przypadku nie otrzymujemy obserwacji nietypowo małych --- nieszablonowi zawodnicy to wyłącznie ci którzy zaskakują w pozytywnym sensie.
-
-Dodajmy, że tylko dwóch koszykarzy rozegrało dokładnie 20 pełnych sezonów w~lidze (Jamal Crawford i Robert Parish) i~tylko jeden rozegrał dokładnie 22 pełne sezony (Vince Carter).
-
-Dla średniej asyst i~zbiórek również obserwujemy tendencję wzrostową przy rosnącym doświadczeniu, jednak efekt ten nie jest aż tak wyraźny jak w~przypadku punktów. Rozstępy międzykwartylowe także się zwiększają, a~liczba obserwacji nietypowych stopniowo maleje.
-
-Na podstawie powyższych analiz, możemy stwierdzić, że opcją ,,bezpieczniejszą'' dla trenera jest zakontraktowanie zawodnika grającego dłużej w lidze. Oczywiście mówimy tu o~czysto teoretycznej sytuacji, w~której trener musiałby podjąć decyzję dysponując jedynie informacją o~doświadczeniu ligowym kandydatów do składu.
-
-
-<<echo=F, fig.width=19, fig.height=11, fig.align="center", fig.cap="\\label{fig:exp_boxplots}Wykresy pudełkowe śrendiej liczby punktów na mecz dla zawodników o konkretnym doświadczeniu w lidze.">>=
-
-ggplot(data=df, aes(x=SEASON_EXP, y=PTS, group=SEASON_EXP, fill=SEASON_EXP)) +
-  geom_boxplot(color="#703100", alpha=0.5, lwd=1.5, na.rm = TRUE) +
-  stat_summary(fun = mean, geom='point', shape=18, color="#ff7300", size=6, na.rm = TRUE, show.legend = TRUE) +
-  scale_fill_gradient(low = "#fcba03", high = "#fc3003", aesthetics = "fill") +
-  scale_shape_manual("", values=c("średnia"="x")) +
-  guides(fill="none") +
-  labs(x = "liczba pełnych sezonów lidze",
-       y = "punkty / mecz",
-       title = "Liczba punktów vs. doświadczenie w lidze") +
-  theme(text = element_text(size=35),
-        legend.position = c(0.9, 0.15),
-        legend.title = element_blank(),
-        legend.spacing.y = unit(0, "mm"),
-        panel.border = element_rect(colour = "black", fill=NA),
-        legend.background = element_blank(),
-        legend.box.background = element_rect(colour = "black"))
-@
-
 \section{Podsumowanie}\label{summary}
 W statystyce jak to w statystyce, ciężko jest jednoznacznie odpowiedzieć na pytanie badawcze. Przeanalizwoaliśmy zawodników pod kątem wzrostu, doświedczania w lidze i przynależności do klubów w zestawieniu z ich osiągami w grze. Zaskakującym wnioskiem jest niewielkie znaczenie wzrostu. Na wyróżnienie zasługują zawodnicy tacy jak Wilt Chamberlain i Bill Russell deklasujący konkurencję w zbiórkach. ... %wstępny szablon? nie skleję nic sensownego o tej godzinie :/ pierwsze zdanie trochę dla beki XD ale nie za bardzo jestem w stanie teraz ocenić czy to jest spoko
 
@@ -364,10 +374,10 @@ W statystyce jak to w statystyce, ciężko jest jednoznacznie odpowiedzieć na p
   [1] \hspace{0.2cm} \href{https://www.kaggle.com/wyattowalsh/basketball}{\emph{www.kaggle.com/wyattowalsh/basketball}}
 	\vspace{0.2cm}
 	
-	[2] \hspace{0.2cm} \href{https://creativecommons.org/licenses/by-sa/4.0/}{\emph{creativecommons.org/licenses/by-sa/4.0/}}
+	[2] \hspace{0.2cm} \href{https://creativecommons.org/licenses/by-sa/4.0/}{\emph{www.creativecommons.org/licenses/by-sa/4.0/}}
 	
 	\vspace{0.2cm}
-	[3] \hspace{0.2cm} \href{https://www.nba.com/stats/history/}{\emph{https://www.nba.com/stats/history/}}
+	[3] \hspace{0.2cm} \href{https://www.nba.com/stats/history/}{\emph{www.nba.com/stats/history/}}
 	
 
 \end{document}
