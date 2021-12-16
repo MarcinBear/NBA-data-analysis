@@ -365,7 +365,7 @@ ggplot(df5, aes(x=reorder(TEAM, TEAM, function(x)+length(x))), na.rm = TRUE) +
 @
 
 \section{Podsumowanie}\label{summary}
-W statystyce jak to w statystyce, ciężko jest jednoznacznie odpowiedzieć na pytanie badawcze. Przeanalizwoaliśmy zawodników pod kątem wzrostu, doświedczania w lidze i przynależności do klubów w zestawieniu z ich osiągami w grze. Zaskakującym wnioskiem jest niewielkie znaczenie wzrostu. Na wyróżnienie zasługują zawodnicy tacy jak Wilt Chamberlain i Bill Russell deklasujący konkurencję w zbiórkach. ... %wstępny szablon? nie skleję nic sensownego o tej godzinie :/ pierwsze zdanie trochę dla beki XD ale nie za bardzo jestem w stanie teraz ocenić czy to jest spoko
+Zbierzmy zatem wnioski z analiz. W pierwszej podsekcji pokazaliśmy, że mimo intuicji sugerującej, że wzrost może mieć bezpośredni wpływ na całkoształt osiągów gracza, w lidze NBA takie zjawisko zdaje się nie występować. Dalej okazuje się, że jedyną zmienną wykazującą zdecydowany brak korelacji jest wzrost i zdobyte punkty, a wszystkie inne zmienne ilościowe oprócz wzrostu i asyst są mniej lub bardziej dodatnio skorelowane. Obserwacja ta sugeruje, że gracze lepsi w konkretnych elementach gry są też przeciętnie lepsi w pozostałych.
 
 
 	\section*{Źródła}\label{sec:sources} % bibtex nie działał nam dobrze z knitrem, dlatego bibliografię robimy na około
