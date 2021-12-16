@@ -34,7 +34,8 @@ library(ggplot2)
 library(StatMeasures)
 library(tidyr)
 library(ggrepel)
-library(corrplot)
+library(ggcorrplot)
+# library(corrplot)
 
 theme_set(theme_bw(base_size = 35))
 theme_update(plot.title = element_text(hjust = 0.5),
@@ -236,12 +237,23 @@ Wartym uwagi jest wyraźne rozgraniczenie pomiędzy pozycjami oraz każdorazowe 
 
 Kolejnym krokiem naszej analizy jest przyjrzenie się macierzy korelacji wykonanej dla wszystkich zmiennych ilościowych. Używamy tutaj współczynnika korelacji Pearsona. Rzeczą która od razu rzuca się w oczy i~może zdawać się dość szokująca jest praktycznie zerowy współczynnik korelacji pomiędzy wzrostem oraz zdobytymi punktami. Wykres rozrzutu \ref{fig:height}, wizualizuje dokładnie to zjawisko. Widzimy tam też zaskakujący ujemny współczynnik dla asyst. Najsilniejsze zależności liniowe występują zaś właśnie pomiędzy punktami i~pozostałymi statystykami.
 
+
 <<echo=F, fig.width=30, fig.height=20, fig.align="center", fig.cap="Macierz korelacji zmiennych ilościowych. ">>=
-data.frame(punkty=df$PTS, asysty=df$AST, zbiórki=df$REB, 
-          wzrost=df$HEIGHT, licz_sezonów=df$SEASON_EXP) %>%
-cor(use="pairwise.complete.obs") %>%
-corrplot.mixed(lower = "pie", upper="number", tl.col='black', 
-               number.cex=5.5, tl.cex=3.5, cl.cex=3)
+
+
+D <- df[, c("HEIGHT", "PTS", "AST", "REB", "SEASON_EXP")]
+D <- D[complete.cases(D), ]
+ggcorrplot(cor(D), type = "lower",
+           outline.col = "white",
+           colors = c("#241aa5", "#ffefe5", "#ff6f00"),
+           lab=TRUE)
+
+
+# data.frame(punkty=df$PTS, asysty=df$AST, zbiórki=df$REB, 
+#           wzrost=df$HEIGHT, licz_sezonów=df$SEASON_EXP) %>%
+# cor(use="pairwise.complete.obs") %>%
+# corrplot.mixed(lower = "pie", upper="number", tl.col='black', 
+#                number.cex=5.5, tl.cex=3.5, cl.cex=3)
 @
 
 

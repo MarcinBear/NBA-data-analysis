@@ -58,22 +58,32 @@ ggplot(df5, aes(x=reorder(TEAM, TEAM, function(x)+length(x))), na.rm = TRUE) +
         legend.background = element_blank(),
         legend.box.background = element_rect(colour = "black", fill=alpha('white', 0.5)))
 
-#+ scale_fill_identity()
 
 
 
 
-library(grid)
-ggplot(df3, aes(x=reorder(COUNTRY, COUNTRY,
-                          function(x)+length(x)))) +
-  geom_bar() + coord_flip()
-# library(ggcorrplot)
-# D <- df[, c(4,5,6,9,10,11)]
-# ggcorrplot(cor(D), type = "lower",
-#            outline.col = "white", 
-#            colors = c("#241aa5", "#007bff", "#ff0000"), 
-#            lab=TRUE)
-# 
+
+library(ggcorrplot)
+
+
+D <- df[, c(4,6,9,10,11)]
+D <- D[complete.cases(D), ]
+ggcorrplot(cor(D), type = "lower",
+           outline.col = "white",
+           colors = c("#241aa5", "#ffefe5", "#ff6f00"),
+           lab=TRUE)
+
+
+
+
+
+
+
+
+
+
+
+
 # ggplot(data=df, aes(x=SEASON_EXP, y=PTS, group=SEASON_EXP, fill=SEASON_EXP)) +
 #   geom_boxplot(color="#703100", alpha=0.5, lwd=1.5, na.rm = TRUE) +
 #   stat_summary(fun = mean, geom='point', shape=18, color="#ff7300", size=6, na.rm = TRUE, show.legend = TRUE) +
