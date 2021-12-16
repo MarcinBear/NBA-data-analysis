@@ -35,7 +35,6 @@ library(StatMeasures)
 library(tidyr)
 library(ggrepel)
 library(ggcorrplot)
-# library(corrplot)
 
 theme_set(theme_bw(base_size = 35))
 theme_update(plot.title = element_text(hjust = 0.5),
@@ -67,8 +66,6 @@ df <- df[keep]  # save only needed variables
 
 names(df)[names(df) == "DISPLAY_FIRST_LAST"] <- "PLAYER"
 names(df)[names(df) == "TEAM_NAME"] <- "TEAM"
-
-# df["AMERICAN"] <- df$COUNTRY == "USA"
 
 
 # simplify positions
@@ -206,9 +203,30 @@ Naszym głównym wnioskiem, który wyciągamy z powyższej analizy, jest to, że
 
 W poszukiwaniu cech wyróżniających najlepszych graczy sensownie będzie rozważyć zależności między zmiennymi ilościowymi. Mając dostęp do statystyk takich jak zdobyte punkty, które są bezpośrednim wyznacznikiem umiejętności gracza, możemy sprawdzić czy wraz z nimi występują inne cechy. Naszym zdaniem ciekawym i~godnym zaprezentowania jest przypadek zależności zbiórek od asyst, wykorzystujący jeszcze zmienną kategoryczną wskazującą pozycję. Zawodników w~ilości \Sexpr{length(df$POSITION[df$POSITION == ""])} bez przypisanej pozycji pominiemy na wykresie, ze względu na nieistotny wpływ wizualizacyjny.
 
+<<echo=F, fig.width=28, fig.height=18, fig.align="center", fig.cap="Macierz korelacji zmiennych ilościowych. ">>=
+
+
+data.frame("l. sezonów"=df$SEASON_EXP, 
+           "punkty"=df$PTS, 
+           "asysty"=df$AST, 
+           "zbiórki"=df$REB,  
+          "wzrost"=df$HEIGHT, check.names = FALSE) %>%
+cor(use="pairwise.complete.obs") %>% 
+ggcorrplot(type = "lower", 
+           title = "Macierz korelacji", legend.title = "",
+           outline.col = "white",
+           colors = c("#241aa5", "#ffefe5", "#ff6f00"),
+           lab=TRUE, tl.cex=50, lab_size=15) + 
+    theme(legend.key.size = unit(4, 'cm'),
+          legend.text = element_text(size=30),
+          plot.title = element_text(size=65, hjust = 0.5))
+
+@
+
+
 <<echo=F, fig.width=23, fig.height=11, fig.align="center", fig.cap="\\label{fig:triple_regre}Wykres rozrzutu dla zależności asyst i zbiórek. Pogrupowany względem pozycji, z czego dla każdej dopasowuje prostą regresji. Dodatkowo podpisani zostali gracze z najlepszymi wynikami. ">>=
 
-# nrow(df[(df$POSITION == ""), ])   # only 60 guys haven't specified position, so we will ignore them
+
 df2 <- df[!(df$POSITION == ""), ]
 
 ggplot(df2, aes(AST, REB, shape=POSITION, color=POSITION, na.rm=TRUE, label=PLAYER)) +
@@ -233,34 +251,10 @@ ggplot(df2, aes(AST, REB, shape=POSITION, color=POSITION, na.rm=TRUE, label=PLAY
   theme(text = element_text(size=40))
 @
 
+
 Wartym uwagi jest wyraźne rozgraniczenie pomiędzy pozycjami oraz każdorazowe występowanie zależności liniowej o~dodatnim współczynniku kierunkowym. Sugeruje to, że dla graczy, zbiórki i~asysty nie wydają się być grą o sumie zerowej. Rozwijając się zawodnicy w NBA średnio stają się lepsi w~obu elementach gry na raz. Jednak każda pozycja wykazuje inną zależność liniową.Na szczególną uwagę zasługują tutaj dwaj zawodnicy z pozycji center, Wilt Chamberlain i~Bill Russell. Libczbą zdobytych zbiórek przewyższają ponad dwukrotnie zdecydowaną większość graczy ze wszystkich pozycji.
 
 Kolejnym krokiem naszej analizy jest przyjrzenie się macierzy korelacji wykonanej dla wszystkich zmiennych ilościowych. Używamy tutaj współczynnika korelacji Pearsona. Rzeczą która od razu rzuca się w oczy i~może zdawać się dość szokująca jest praktycznie zerowy współczynnik korelacji pomiędzy wzrostem oraz zdobytymi punktami. Wykres rozrzutu \ref{fig:height}, wizualizuje dokładnie to zjawisko. Widzimy tam też zaskakujący ujemny współczynnik dla asyst. Najsilniejsze zależności liniowe występują zaś właśnie pomiędzy punktami i~pozostałymi statystykami.
-
-
-<<echo=F, fig.width=30, fig.height=20, fig.align="center", fig.cap="Macierz korelacji zmiennych ilościowych. ">>=
-
-
-data.frame(punkty=df$PTS, asysty=df$AST, zbiórki=df$REB, 
-          wzrost=df$HEIGHT, liczba_sezonów=df$SEASON_EXP) %>%
-cor(use="pairwise.complete.obs") %>% 
-ggcorrplot(type = "lower", 
-           title = "Macierz korelacji", legend.title = "",
-           outline.col = "white",
-           colors = c("#241aa5", "#ffefe5", "#ff6f00"),
-           lab=TRUE, tl.cex=50, lab_size=15) + 
-    theme(legend.key.size = unit(4, 'cm'),
-          legend.text = element_text(size=30),
-          plot.title = element_text(size=65))
-
-
-# data.frame(punkty=df$PTS, asysty=df$AST, zbiórki=df$REB, 
-#           wzrost=df$HEIGHT, licz_sezonów=df$SEASON_EXP) %>%
-# cor(use="pairwise.complete.obs") %>%
-# corrplot.mixed(lower = "pie", upper="number", tl.col='black', 
-#                number.cex=5.5, tl.cex=3.5, cl.cex=3)
-@
-
 
 \subsection{Drużyna a wyjątkowość zawodników}
 
