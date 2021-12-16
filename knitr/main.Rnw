@@ -241,12 +241,17 @@ Kolejnym krokiem naszej analizy jest przyjrzenie się macierzy korelacji wykonan
 <<echo=F, fig.width=30, fig.height=20, fig.align="center", fig.cap="Macierz korelacji zmiennych ilościowych. ">>=
 
 
-D <- df[, c("HEIGHT", "PTS", "AST", "REB", "SEASON_EXP")]
-D <- D[complete.cases(D), ]
-ggcorrplot(cor(D), type = "lower",
+data.frame(punkty=df$PTS, asysty=df$AST, zbiórki=df$REB, 
+          wzrost=df$HEIGHT, liczba_sezonów=df$SEASON_EXP) %>%
+cor(use="pairwise.complete.obs") %>% 
+ggcorrplot(type = "lower", 
+           title = "Macierz korelacji", legend.title = "",
            outline.col = "white",
            colors = c("#241aa5", "#ffefe5", "#ff6f00"),
-           lab=TRUE)
+           lab=TRUE, tl.cex=50, lab_size=15) + 
+    theme(legend.key.size = unit(4, 'cm'),
+          legend.text = element_text(size=30),
+          plot.title = element_text(size=65))
 
 
 # data.frame(punkty=df$PTS, asysty=df$AST, zbiórki=df$REB, 
